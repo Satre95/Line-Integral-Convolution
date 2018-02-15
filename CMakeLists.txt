@@ -12,6 +12,8 @@ set(CMAKE_MACOSX_RPATH 1)
 set(EXTERNALS_DIR ${CMAKE_SOURCE_DIR}/external)
 set(CMAKE_BUILD_TYPE DEBUG)
 set(THREADS_PREFER_PTHREAD ON)
+set( CMAKE_VERBOSE_MAKEFILE ON )
+
 
 # Check if the user has provided a path to their local cinder installation.
 if(CINDER_PATH)	
@@ -21,3 +23,13 @@ else()
 	message(FATAL_ERROR "Path to Cinder not provided. Please define a variable CINDER_PATH with a path to root Cinder directory.")
 endif()
 
+# Set source and header files.
+add_subdirectory(${CINDER_PATH} ./cinder-libs)
+add_subdirectory(source)
+
+# Build the app config
+ci_make_app(
+    APP_NAME    "LIC-Cinder"
+    CINDER_PATH ${CINDER_PATH}
+    SOURCES     ${SOURCE_FILES}
+)
