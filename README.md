@@ -1,3 +1,3 @@
-# Line-Integral-Convolution
+# Vortex-Simulation
 
-An implementation of line integral convolution algorithm with Cinder
+An particle simulation in 2D space with vortices.
