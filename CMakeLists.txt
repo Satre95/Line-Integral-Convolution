@@ -12,3 +12,12 @@ set(CMAKE_MACOSX_RPATH 1)
 set(EXTERNALS_DIR ${CMAKE_SOURCE_DIR}/external)
 set(CMAKE_BUILD_TYPE DEBUG)
 set(THREADS_PREFER_PTHREAD ON)
+
+# Check if the user has provided a path to their local cinder installation.
+if(CINDER_PATH)	
+	include("${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake")
+	message( STATUS "Cinder path set to ${CINDER_PATH}")
+else()
+	message(FATAL_ERROR "Path to Cinder not provided. Please define a variable CINDER_PATH with a path to root Cinder directory.")
+endif()
+
