@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(LIC-Cinder CXX)
+project(Vortex-Simulation CXX)
 find_package(Threads REQUIRED)
 
 set(CMAKE_CXX_STANDARD 14) # C++14 beacuse it's 2018...
@@ -29,7 +29,7 @@ add_subdirectory(source)
 
 # Build the app config
 ci_make_app(
-    APP_NAME    "LIC-Cinder"
+    APP_NAME    "Vortex-Simulation"
     CINDER_PATH ${CINDER_PATH}
     SOURCES     ${SOURCE_FILES}
 )
