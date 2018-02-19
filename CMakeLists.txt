@@ -31,5 +31,5 @@ add_subdirectory(source)
 ci_make_app(
     APP_NAME    "Vortex-Simulation"
     CINDER_PATH ${CINDER_PATH}
-    SOURCES     ${SOURCE_FILES}
+    SOURCES     ${SOURCE_FILES} ${HEADER_FILES}
 )
