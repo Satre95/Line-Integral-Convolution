@@ -48,3 +48,21 @@ inline float fsqrtf( const float & val )
     y  = y * ( f - ( x * y * y ) ) ;        // Another iteration of Newton's method
     return val * y ;                        // Return val / sqrt(val) which is sqrt(val)
 }
+
+/*! \brief compute nearest power of 2 greater than or equal to the given value
+ */
+inline unsigned int NearestPowerOfTwoExponent( unsigned int iVal )
+{
+    if( 0 == iVal ) return 0 ;
+    --iVal ; // exact powers of two otherwise produce the wrong result below
+    unsigned int shift = 0 ;
+    while( ( iVal >> shift ) != 0 ) ++ shift ;
+    return shift ;
+}
+
+/*! \brief Compute nearest power of 2 greater than or equal to the given value
+ */
+inline unsigned int NearestPowerOfTwo( unsigned int iVal )
+{
+    return 1 << NearestPowerOfTwoExponent( iVal ) ;
+}

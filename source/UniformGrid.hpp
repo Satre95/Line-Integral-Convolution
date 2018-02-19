@@ -94,16 +94,40 @@ public:
      */
     void DefineShape( size_t uNumElements , const cinder::vec3 & vMin , const cinder::vec3 & vMax , bool bPowerOf2);
     
+    /*! \brief Precompute grid spacing, to optimize OffsetOfPosition and other utility routines.
+     */
+    void PrecomputeSpacing();
+    
     //Getters and Setters
     cinder::vec3 & GetExtent() { return mGridExtent; }
     const cinder::vec3 & GetExtent() const { return mGridExtent; }
+    /*! \brief Get number of grid cells along the given dimension
+     
+     \param index - dimension queried, where 0 means x, 1 means y and 2 means z.
+     
+     \see GetNumPoints
+     */
+    size_t GetNumCells( const unsigned & index ) const {
+        return GetNumPoints( index ) - 1 ;
+    }
+    
+    /*! \brief Get number of grid points along the given dimension
+     
+     \param index - dimension queried, where 0 means x, 1 means y and 2 means z.
+     
+     \note The number of cells in each direction i is GetNumPoints(i) - 1.
+     
+     */
+    const size_t & GetNumPoints( const unsigned & index ) const {
+        return mNumPoints[ index ] ;
+    }
     
 protected:
     cinder::vec3        mMinCorner      ;   ///< Minimum position (in world units) of grid in X, Y and Z directions.
     cinder::vec3        mGridExtent     ;   ///< Size (in world units) of grid in X, Y and Z directions.
     cinder::vec3        mCellExtent     ;   ///< Size (in world units) of a cell.
     cinder::vec3        mCellsPerExtent ;   ///< Reciprocal of cell size (precomputed once to avoid excess divides).
-    unsigned            mNumPoints[ 3 ] ;   ///< Number of gridpoints along X, Y and Z directions.
+    size_t              mNumPoints[ 3 ] ;   ///< Number of gridpoints along X, Y and Z directions.
     
 };
 
