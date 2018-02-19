@@ -1,10 +1,16 @@
 set(SOURCE_FILES 
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp 
     ${CMAKE_CURRENT_SOURCE_DIR}/Vorton.cpp 
-    PARENT_SCOPE)
+    ${CMAKE_CURRENT_SOURCE_DIR}/UniformGrid.cpp 
+    ${CMAKE_CURRENT_SOURCE_DIR}/NestedGrid.cpp 
+    PARENT_SCOPE
+)
 
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/math_helper.hpp 
     ${CMAKE_CURRENT_SOURCE_DIR}/Vorton.hpp 
-    PARENT_SCOPE)
+    ${CMAKE_CURRENT_SOURCE_DIR}/UniformGrid.hpp 
+    ${CMAKE_CURRENT_SOURCE_DIR}/NestedGrid.hpp 
+    PARENT_SCOPE
+)
     
