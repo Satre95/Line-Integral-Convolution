@@ -77,3 +77,36 @@ void UniformGridGeometry::PrecomputeSpacing() {
 		mCellsPerExtent.z = float(GetNumCells(2)) / GetExtent().z;
 	}
 }
+
+void UniformGridGeometry::Decimate(const UniformGridGeometry & src, int iDecimation) {
+	mGridExtent = src.mGridExtent;
+	mMinCorner = src.mMinCorner;
+	mNumPoints[0] = src.GetNumCells(0) / iDecimation + 1;
+	mNumPoints[1] = src.GetNumCells(1) / iDecimation + 1;
+	mNumPoints[2] = src.GetNumCells(2) / iDecimation + 1;
+	if (iDecimation > 1)
+	{   // Decimation could reduce dimension and integer arithmetic could make value be 0, which is useless if src contained any data.
+		mNumPoints[0] = std::max(size_t(2), GetNumPoints(0));
+		mNumPoints[1] = std::max(size_t(2), GetNumPoints(1));
+		mNumPoints[2] = std::max(size_t(2), GetNumPoints(2));
+	}
+	PrecomputeSpacing();
+}
+
+void UniformGridGeometry::IndicesOfPosition(size_t indices[3], const cinder::vec3 & vPosition) const
+{
+	// Notice the pecular test here.  vPosition may lie slightly outside of the extent give by vMax.
+	// Review the geometry described in the class header comment.
+	cinder::vec3 vPosRel(vPosition - GetMinCorner());   // position of given point relative to container region
+	cinder::vec3 vIdx(vPosRel.x * GetCellsPerExtent().x, vPosRel.y * GetCellsPerExtent().y, vPosRel.z * GetCellsPerExtent().z);
+	indices[0] = unsigned(vIdx.x);
+	indices[1] = unsigned(vIdx.y);
+	indices[2] = unsigned(vIdx.z);
+}
+
+size_t UniformGridGeometry::OffsetOfPosition(const cinder::vec3 & vPosition) {
+	size_t indices[3];
+	IndicesOfPosition(indices, vPosition);
+	const size_t offset = indices[0] + GetNumPoints(0) * (indices[1] + GetNumPoints(1) * indices[2]);
+	return offset;
+}

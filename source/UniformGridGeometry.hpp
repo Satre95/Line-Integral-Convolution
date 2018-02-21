@@ -59,6 +59,10 @@ public:
 		mNumPoints[0] = mNumPoints[1] = mNumPoints[2] = 0;
 	}
 
+	UniformGridGeometry(const UniformGridGeometry & other) {
+		Decimate(other, 1);
+	}
+
 	~UniformGridGeometry() {}
 
 	/*!
@@ -98,29 +102,65 @@ public:
 	 */
 	void PrecomputeSpacing();
 
+	/*! \brief Create a lower-resolution uniform grid based on another
+
+	\param src - Source uniform grid upon which to base dimensions of this one
+
+	\param iDecimation - amount by which to reduce the number of grid cells in each dimension.
+	Typically this would be 2.
+
+	\note The number of cells is decimated.  The number of points is different.
+
+	*/
+	void Decimate(const UniformGridGeometry & src, int iDecimation);
+
+	/*! \brief Compute indices into contents array of a point at a given position
+
+	\param vPosition - position of a point.  It must be within the region of this container.
+
+	\param indices - Indices into contents array of a point at vPosition.
+
+	\see IndicesFromOffset, PositionFromOffset, OffsetOfPosition.
+
+	\note Derived class defines the actual contents array.
+
+	*/
+	void IndicesOfPosition(size_t indices[3], const cinder::vec3 & vPosition) const;
+
+	/*! \brief Compute offset into contents array of a point at a given position
+
+	\index vPosition - position of a point.  It must be within the region of this container.
+
+	\return Offset into contents array of a point at vPosition.
+
+	\see IndicesFromOffset, PositionFromOffset.
+
+	\note Derived class defines the actual contents array.
+
+	*/
+	size_t OffsetOfPosition(const cinder::vec3 & vPosition);
+
 	//Getters and Setters
 	cinder::vec3 & GetExtent() { return mGridExtent; }
 	const cinder::vec3 & GetExtent() const { return mGridExtent; }
-	/*! \brief Get number of grid cells along the given dimension
 
-	 \param index - dimension queried, where 0 means x, 1 means y and 2 means z.
-
-	 \see GetNumPoints
-	 */
+	/// Get number of grid cells along the given dimension
 	size_t GetNumCells(const unsigned & index) const {
 		return GetNumPoints(index) - 1;
 	}
 
-	/*! \brief Get number of grid points along the given dimension
-
-	 \param index - dimension queried, where 0 means x, 1 means y and 2 means z.
-
-	 \note The number of cells in each direction i is GetNumPoints(i) - 1.
-
-	 */
+	/// Get number of grid points along the given dimension
 	const size_t & GetNumPoints(const unsigned & index) const {
 		return mNumPoints[index];
 	}
+
+	const cinder::vec3 & GetMinCorner() const { return mMinCorner; }
+	cinder::vec3 & GetMinCorner() { return mMinCorner; }
+	const cinder::vec3 & GetCellsPerExtent() const { return mCellsPerExtent; }
+	cinder::vec3 & GetCellsPerExtent() { return mCellsPerExtent; }
+	size_t GetGridCapacity() const { return GetNumPoints(0) * GetNumPoints(1) * GetNumPoints(2); }
+	const cinder::vec3 & GetCellSpacing() const { return mCellExtent; }
+	cinder::vec3 & GetCellSpacing() { return mCellExtent; }
 
 protected:
 	cinder::vec3        mMinCorner;   ///< Minimum position (in world units) of grid in X, Y and Z directions.
