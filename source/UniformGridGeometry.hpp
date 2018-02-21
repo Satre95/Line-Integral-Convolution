@@ -70,7 +70,7 @@ public:
 
 	 \see Clear, DefineShape
 	 */
-	UniformGridGeometry(unsigned uNumElements, const cinder::vec3 & vMin, const cinder::vec3 & vMax, bool bPowerOf2 = true)
+	UniformGridGeometry(size_t uNumElements, const cinder::vec3 & vMin, const cinder::vec3 & vMax, bool bPowerOf2 = true)
 	{
 		DefineShape(uNumElements, vMin, vMax, bPowerOf2);
 	}
@@ -97,10 +97,6 @@ public:
 	 (x and y) since the z size is zero.
 	 */
 	void DefineShape(size_t uNumElements, const cinder::vec3 & vMin, const cinder::vec3 & vMax, bool bPowerOf2);
-
-	/*! \brief Precompute grid spacing, to optimize OffsetOfPosition and other utility routines.
-	 */
-	void PrecomputeSpacing();
 
 	/*! \brief Create a lower-resolution uniform grid based on another
 
@@ -140,17 +136,56 @@ public:
 	*/
 	size_t OffsetOfPosition(const cinder::vec3 & vPosition);
 
+	/*! \brief Compute position of minimal corner of grid cell with given indices
+
+	\param position - position of minimal corner of grid cell
+
+	\param indices - grid cell indices.
+
+	\note Rarely if ever would you want to compute position from indices in this way.
+	Typically, this kind of computation occurs inside a triply-nested loop,
+	in which case the procedure should compute each component
+	separately.  Furthermore, such a routine would cache
+	GetCellSpacing instead of computing it each iteration.
+
+	*/
+	void    PositionFromIndices(cinder::vec3 & vPosition, const size_t indices[3]) const;
+
+	/*! \brief Compute X,Y,Z grid cell indices from offset into contents array.
+
+	\param indices - Individual X,Y,Z component grid cell indices.
+
+	\param offset - Offset into mContents.
+	*/
+	void    IndicesFromOffset(size_t indices[3], const size_t & offset);
+
+	/*! \brief Get position of grid cell minimum corner.
+
+	\param vPos - position of grid cell minimum corner
+
+	\param offset - offset into contents array
+
+	Each grid cell spans a region (whose size is given by GetCellSpacing)
+	starting at a location which this routine returns.  So the grid cell
+	with the given offset spans the region from vPos (as this routine
+	assigns) to vPos + GetCellSpacing().
+
+	\note Derived class provides actual contents array.
+
+	*/
+	void    PositionFromOffset(cinder::vec3 & vPos, const size_t & offset);
+
 	//Getters and Setters
 	cinder::vec3 & GetExtent() { return mGridExtent; }
 	const cinder::vec3 & GetExtent() const { return mGridExtent; }
 
 	/// Get number of grid cells along the given dimension
-	size_t GetNumCells(const unsigned & index) const {
+	size_t GetNumCells(const size_t & index) const {
 		return GetNumPoints(index) - 1;
 	}
 
 	/// Get number of grid points along the given dimension
-	const size_t & GetNumPoints(const unsigned & index) const {
+	const size_t & GetNumPoints(const size_t & index) const {
 		return mNumPoints[index];
 	}
 
@@ -163,6 +198,41 @@ public:
 	cinder::vec3 & GetCellSpacing() { return mCellExtent; }
 
 protected:
+
+	/// Precompute grid spacing, to optimize OffsetOfPosition and other utility routines.
+	void PrecomputeSpacing();
+
+	/*! \brief Get offset into contents array given indices
+
+	\param indices - indices specifying a grid cell
+
+	\return offset into contents array
+
+	\note Typically this routine would not be efficient to use, except for special cases.
+	Often, one writes a triple-nested loop iterating over each
+	component of indices, in which case it is more efficient
+	to compute the z and y terms of the offset separately and
+	combine them with the x term in the inner-most loop.
+	This routine is useful primarily when there is no coherence
+	between the indices of this iteration and the previous or next.
+
+	\note Derived class provides actual contents array.
+	*/
+	size_t OffsetFromIndices(const size_t indices[3]) const
+	{
+		return indices[0] + GetNumPoints(0) * (indices[1] + GetNumPoints(1) * indices[2]);
+	}
+
+	/// Clear out any existing shape information
+	void Clear()
+	{
+		mMinCorner =
+			mGridExtent =
+			mCellExtent =
+			mCellsPerExtent = cinder::vec3(0.0f, 0.0f, 0.0f);
+		mNumPoints[0] = mNumPoints[1] = mNumPoints[2] = 0;
+	}
+
 	cinder::vec3        mMinCorner;   ///< Minimum position (in world units) of grid in X, Y and Z directions.
 	cinder::vec3        mGridExtent;   ///< Size (in world units) of grid in X, Y and Z directions.
 	cinder::vec3        mCellExtent;   ///< Size (in world units) of a cell.

@@ -110,3 +110,26 @@ size_t UniformGridGeometry::OffsetOfPosition(const cinder::vec3 & vPosition) {
 	const size_t offset = indices[0] + GetNumPoints(0) * (indices[1] + GetNumPoints(1) * indices[2]);
 	return offset;
 }
+
+void UniformGridGeometry::PositionFromIndices(cinder::vec3 & vPosition, const size_t indices[3]) const
+{
+	vPosition.x = GetMinCorner().x + float(indices[0]) * GetCellSpacing().x;
+	vPosition.y = GetMinCorner().y + float(indices[1]) * GetCellSpacing().y;
+	vPosition.z = GetMinCorner().z + float(indices[2]) * GetCellSpacing().z;
+}
+
+void UniformGridGeometry::IndicesFromOffset(size_t indices[3], const size_t & offset)
+{
+	indices[2] = offset / (GetNumPoints(0) * GetNumPoints(1));
+	indices[1] = (offset - indices[2] * GetNumPoints(0) * GetNumPoints(1)) / GetNumPoints(0);
+	indices[0] = offset - GetNumPoints(0) * (indices[1] + GetNumPoints(1) * indices[2]);
+}
+
+void UniformGridGeometry::PositionFromOffset(cinder::vec3 & vPos, const size_t & offset)
+{
+	size_t indices[3];
+	IndicesFromOffset(indices, offset);
+	vPos.x = GetMinCorner().x + float(indices[0]) * GetCellSpacing().x;
+	vPos.y = GetMinCorner().y + float(indices[1]) * GetCellSpacing().y;
+	vPos.z = GetMinCorner().z + float(indices[2]) * GetCellSpacing().z;
+}
