@@ -1,7 +1,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
-#include "UniformGrid.hpp"
+#include "UniformGridGeometry.hpp"
 #include "NestedGrid.hpp"
 
 using namespace ci;
