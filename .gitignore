@@ -411,3 +411,4 @@ __pycache__/
 
 
 # End of https://www.gitignore.io/api/Xcode,VisualStudio,macos,windows
+msvc
