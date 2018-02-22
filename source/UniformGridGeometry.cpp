@@ -93,25 +93,25 @@ void UniformGridGeometry::Decimate(const UniformGridGeometry & src, int iDecimat
 	PrecomputeSpacing();
 }
 
-void UniformGridGeometry::IndicesOfPosition(size_t indices[3], const cinder::vec3 & vPosition) const
+void UniformGridGeometry::IndicesOfPosition(size_t indices[3], const vec3 & vPosition) const
 {
 	// Notice the pecular test here.  vPosition may lie slightly outside of the extent give by vMax.
 	// Review the geometry described in the class header comment.
-	cinder::vec3 vPosRel(vPosition - GetMinCorner());   // position of given point relative to container region
-	cinder::vec3 vIdx(vPosRel.x * GetCellsPerExtent().x, vPosRel.y * GetCellsPerExtent().y, vPosRel.z * GetCellsPerExtent().z);
+	vec3 vPosRel(vPosition - GetMinCorner());   // position of given point relative to container region
+	vec3 vIdx(vPosRel.x * GetCellsPerExtent().x, vPosRel.y * GetCellsPerExtent().y, vPosRel.z * GetCellsPerExtent().z);
 	indices[0] = unsigned(vIdx.x);
 	indices[1] = unsigned(vIdx.y);
 	indices[2] = unsigned(vIdx.z);
 }
 
-size_t UniformGridGeometry::OffsetOfPosition(const cinder::vec3 & vPosition) {
+size_t UniformGridGeometry::OffsetOfPosition(const vec3 & vPosition) {
 	size_t indices[3];
 	IndicesOfPosition(indices, vPosition);
 	const size_t offset = indices[0] + GetNumPoints(0) * (indices[1] + GetNumPoints(1) * indices[2]);
 	return offset;
 }
 
-void UniformGridGeometry::PositionFromIndices(cinder::vec3 & vPosition, const size_t indices[3]) const
+void UniformGridGeometry::PositionFromIndices(vec3 & vPosition, const size_t indices[3]) const
 {
 	vPosition.x = GetMinCorner().x + float(indices[0]) * GetCellSpacing().x;
 	vPosition.y = GetMinCorner().y + float(indices[1]) * GetCellSpacing().y;
@@ -125,7 +125,7 @@ void UniformGridGeometry::IndicesFromOffset(size_t indices[3], const size_t & of
 	indices[0] = offset - GetNumPoints(0) * (indices[1] + GetNumPoints(1) * indices[2]);
 }
 
-void UniformGridGeometry::PositionFromOffset(cinder::vec3 & vPos, const size_t & offset)
+void UniformGridGeometry::PositionFromOffset(vec3 & vPos, const size_t & offset)
 {
 	size_t indices[3];
 	IndicesFromOffset(indices, offset);
