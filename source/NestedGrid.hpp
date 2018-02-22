@@ -2,8 +2,7 @@
 
 #include "UniformGrid.hpp"
 
-class NestedGrid: public UniformGrid
-{
+class NestedGrid {
 public:
 	NestedGrid();
 	~NestedGrid();
