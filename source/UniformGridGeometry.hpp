@@ -63,14 +63,14 @@ public:
 		Decimate(other, 1);
 	}
 
-	~UniformGridGeometry() {}
+	virtual ~UniformGridGeometry() {}
 
 	/*!
 	 \brief Construct a uniform grid that fits the given geometry.
 
 	 \see Clear, DefineShape
 	 */
-	UniformGridGeometry(size_t uNumElements, const cinder::vec3 & vMin, const cinder::vec3 & vMax, bool bPowerOf2 = true)
+	UniformGridGeometry(size_t uNumElements, const glm::vec3 & vMin, const glm::vec3 & vMax, bool bPowerOf2 = true)
 	{
 		DefineShape(uNumElements, vMin, vMax, bPowerOf2);
 	}
@@ -96,7 +96,7 @@ public:
 	 (2,3,0) then this class considers the region to have 2 dimensions
 	 (x and y) since the z size is zero.
 	 */
-	void DefineShape(size_t uNumElements, const cinder::vec3 & vMin, const cinder::vec3 & vMax, bool bPowerOf2);
+	virtual void DefineShape(size_t uNumElements, const glm::vec3 & vMin, const glm::vec3 & vMax, bool bPowerOf2);
 
 	/*! \brief Create a lower-resolution uniform grid based on another
 
@@ -108,7 +108,7 @@ public:
 	\note The number of cells is decimated.  The number of points is different.
 
 	*/
-	void Decimate(const UniformGridGeometry & src, int iDecimation);
+	virtual void Decimate(const UniformGridGeometry & src, int iDecimation);
 
 	/*! \brief Compute indices into contents array of a point at a given position
 
@@ -121,7 +121,7 @@ public:
 	\note Derived class defines the actual contents array.
 
 	*/
-	void IndicesOfPosition(size_t indices[3], const cinder::vec3 & vPosition) const;
+	virtual void IndicesOfPosition(size_t indices[3], const glm::vec3 & vPosition) const;
 
 	/*! \brief Compute offset into contents array of a point at a given position
 
@@ -134,7 +134,7 @@ public:
 	\note Derived class defines the actual contents array.
 
 	*/
-	size_t OffsetOfPosition(const cinder::vec3 & vPosition);
+	virtual size_t OffsetOfPosition(const glm::vec3 & vPosition);
 
 	/*! \brief Compute position of minimal corner of grid cell with given indices
 
@@ -149,7 +149,7 @@ public:
 	GetCellSpacing instead of computing it each iteration.
 
 	*/
-	void    PositionFromIndices(cinder::vec3 & vPosition, const size_t indices[3]) const;
+	virtual void PositionFromIndices(glm::vec3 & vPosition, const size_t indices[3]) const;
 
 	/*! \brief Compute X,Y,Z grid cell indices from offset into contents array.
 
@@ -157,7 +157,7 @@ public:
 
 	\param offset - Offset into mContents.
 	*/
-	void    IndicesFromOffset(size_t indices[3], const size_t & offset);
+	virtual void    IndicesFromOffset(size_t indices[3], const size_t & offset);
 
 	/*! \brief Get position of grid cell minimum corner.
 
@@ -173,11 +173,11 @@ public:
 	\note Derived class provides actual contents array.
 
 	*/
-	void    PositionFromOffset(cinder::vec3 & vPos, const size_t & offset);
+	virtual void    PositionFromOffset(glm::vec3 & vPos, const size_t & offset);
 
 	//Getters and Setters
-	cinder::vec3 & GetExtent() { return mGridExtent; }
-	const cinder::vec3 & GetExtent() const { return mGridExtent; }
+	glm::vec3 & GetExtent() { return mGridExtent; }
+	const glm::vec3 & GetExtent() const { return mGridExtent; }
 
 	/// Get number of grid cells along the given dimension
 	size_t GetNumCells(const size_t & index) const {
@@ -189,13 +189,13 @@ public:
 		return mNumPoints[index];
 	}
 
-	const cinder::vec3 & GetMinCorner() const { return mMinCorner; }
-	cinder::vec3 & GetMinCorner() { return mMinCorner; }
-	const cinder::vec3 & GetCellsPerExtent() const { return mCellsPerExtent; }
-	cinder::vec3 & GetCellsPerExtent() { return mCellsPerExtent; }
+	const glm::vec3 & GetMinCorner() const { return mMinCorner; }
+	glm::vec3 & GetMinCorner() { return mMinCorner; }
+	const glm::vec3 & GetCellsPerExtent() const { return mCellsPerExtent; }
+	glm::vec3 & GetCellsPerExtent() { return mCellsPerExtent; }
 	size_t GetGridCapacity() const { return GetNumPoints(0) * GetNumPoints(1) * GetNumPoints(2); }
-	const cinder::vec3 & GetCellSpacing() const { return mCellExtent; }
-	cinder::vec3 & GetCellSpacing() { return mCellExtent; }
+	const glm::vec3 & GetCellSpacing() const { return mCellExtent; }
+	glm::vec3 & GetCellSpacing() { return mCellExtent; }
 
 protected:
 
@@ -224,18 +224,18 @@ protected:
 	}
 
 	/// Clear out any existing shape information
-	void Clear()
+	virtual void Clear()
 	{
 		mMinCorner =
 			mGridExtent =
 			mCellExtent =
-			mCellsPerExtent = cinder::vec3(0.0f, 0.0f, 0.0f);
+			mCellsPerExtent = glm::vec3(0.0f, 0.0f, 0.0f);
 		mNumPoints[0] = mNumPoints[1] = mNumPoints[2] = 0;
 	}
 
-	cinder::vec3        mMinCorner;   ///< Minimum position (in world units) of grid in X, Y and Z directions.
-	cinder::vec3        mGridExtent;   ///< Size (in world units) of grid in X, Y and Z directions.
-	cinder::vec3        mCellExtent;   ///< Size (in world units) of a cell.
-	cinder::vec3        mCellsPerExtent;   ///< Reciprocal of cell size (precomputed once to avoid excess divides).
+	glm::vec3        mMinCorner;   ///< Minimum position (in world units) of grid in X, Y and Z directions.
+	glm::vec3        mGridExtent;   ///< Size (in world units) of grid in X, Y and Z directions.
+	glm::vec3        mCellExtent;   ///< Size (in world units) of a cell.
+	glm::vec3        mCellsPerExtent;   ///< Reciprocal of cell size (precomputed once to avoid excess divides).
 	size_t              mNumPoints[3];   ///< Number of gridpoints along X, Y and Z directions.
 };
