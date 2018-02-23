@@ -97,7 +97,7 @@ public:
         size_t        indices[3] ; // Indices of grid cell containing position.
         Parent::IndicesOfPosition( indices , vPosition ) ;
         glm::vec3            vMinCorner ;
-        PositionFromIndices( vMinCorner , indices ) ;
+        Parent::PositionFromIndices( vMinCorner , indices ) ;
         const unsigned  offsetX0Y0Z0 = OffsetFromIndices( indices ) ;
         const glm::vec3      vDiff         = vPosition - vMinCorner ; // Relative location of position within its containing grid cell.
         const glm::vec3      tween         = glm::vec3( vDiff.x * GetCellsPerExtent().x , vDiff.y * GetCellsPerExtent().y , vDiff.z * GetCellsPerExtent().z ) ;
@@ -126,5 +126,6 @@ public:
     }
 
 private:
+	/// 3D array of items.
 	std::vector<TypeT> mContents;
 };
