@@ -8,6 +8,7 @@ template <class TypeT>
 class UniformGrid: public UniformGridGeometry {
 public:
 	typedef UniformGridGeometry Parent;
+	friend class UniformGridMath;
 
 	UniformGrid(): UniformGridGeometry() {}
 
