@@ -1,5 +1,4 @@
 set(SOURCE_FILES 
-    ${CMAKE_CURRENT_SOURCE_DIR}/VortexSimulationApp.cpp 
     ${CMAKE_CURRENT_SOURCE_DIR}/Vorton.cpp 
     ${CMAKE_CURRENT_SOURCE_DIR}/UniformGrid.cpp 
     ${CMAKE_CURRENT_SOURCE_DIR}/NestedGrid.cpp 

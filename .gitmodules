@@ -1,0 +1,3 @@
+[submodule "external/of"]
+	path = external/of
+	url = https://github.com/ofnode/of.git
