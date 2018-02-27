@@ -27,4 +27,5 @@ add_subdirectory(source)
 # Build the app config
 add_executable(VortexSimulation WIN32 ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(VortexSimulation PRIVATE openFrameworks)
+target_include_directories(VortexSimulation PRIVATE ${OF_INCLUDE_DIRS})
 cotire(VortexSimulation)
