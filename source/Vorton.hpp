@@ -1,12 +1,13 @@
 #pragma once
 
-#include <cinder/Vector.h>
+#include "ofVec3f.h"
+#include "ofVec2f.h"
 
 class Vorton
 {
 public:
 	Vorton();
-    Vorton(cinder::vec3 pos, cinder::vec3 vorticity, float radius = 1.f, cinder::vec2 velocity = cinder::vec2(0));
+    Vorton(ofVec3f pos, ofVec3f vorticity, float radius = 1.f, ofVec2f velocity = ofVec2f(0));
     Vorton(const Vorton & other);
 	~Vorton();
     
@@ -21,7 +22,7 @@ public:
         volume element, used to compute a contribution
         to a velocity field.
     */
-    void AccumulateVelocity(cinder::vec3 & velocityOut, const cinder::vec3 & posQuery);
+    void AccumulateVelocity(ofVec3f & velocityOut, const ofVec3f & posQuery);
     
     /*! \brief Computes the voriticty required to obtain a given velocity.
      
@@ -42,13 +43,13 @@ public:
         This assumes v and r are orthogonal, so this is a very special-purpose
         routine. This routine also assumes this vorton's position and radius are where they need to be.
      */
-    void AssignByVelocity(const cinder::vec3 & queryPosition, const cinder::vec3 velocity);
+    void AssignByVelocity(const ofVec3f & queryPosition, const ofVec3f velocity);
     
 private:
-    cinder::vec3 mPosition;
-    cinder::vec3 mVorticity;
+    ofVec3f mPosition;
+    ofVec3f mVorticity;
     float mRadius;
-    cinder::vec2 mVelocity;
+    ofVec2f mVelocity;
 	
 };
 

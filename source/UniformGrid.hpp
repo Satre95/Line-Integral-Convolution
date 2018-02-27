@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cinder/Vector.h>
+#include "ofVec3f.h"
 #include "UniformGridGeometry.hpp"
 #include <vector>
 

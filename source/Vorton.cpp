@@ -1,7 +1,6 @@
 #include "Vorton.hpp"
 #include "math_helper.hpp"
 
-using namespace cinder;
 static const float  sAvoidSingularity   = powf( FLT_MIN , 1.0f / 3.0f ) ;
 
 Vorton::Vorton() :

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "UniformGrid.hpp"
-#include <cinder/Vector.h>
+#include "ofVec3f.h"
 #include <vector>
 #include <array>
 
