@@ -1,10 +1,10 @@
 #include "UniformGridMath.hpp"
 
-void UniformGridMath::ComputeJacobian( UniformGrid< glm::mat3 > & jacobian , const UniformGrid< glm::vec3 > & vec ) {
-    const glm::vec3      spacing                 = vec.GetCellSpacing() ;
+void UniformGridMath::ComputeJacobian( UniformGrid< ofMatrix3x3 > & jacobian , const UniformGrid< ofVec3f > & vec ) {
+    const ofVec3f      spacing                 = vec.GetCellSpacing() ;
     // Avoid divide-by-zero when z size is effectively 0 (for 2D domains)
-    const glm::vec3      reciprocalSpacing( 1.0f / spacing.x , 1.0f / spacing.y , spacing.z > FLT_EPSILON ? 1.0f / spacing.z : 0.0f ) ;
-    const glm::vec3      halfReciprocalSpacing( 0.5f * reciprocalSpacing ) ;
+    const ofVec3f      reciprocalSpacing( 1.0f / spacing.x , 1.0f / spacing.y , spacing.z > FLT_EPSILON ? 1.0f / spacing.z : 0.0f ) ;
+    const ofVec3f      halfReciprocalSpacing( 0.5f * reciprocalSpacing ) ;
     const size_t  dims[3]                 = { vec.GetNumPoints( 0 )   , vec.GetNumPoints( 1 )   , vec.GetNumPoints( 2 )   } ;
     const size_t  dimsMinus1[3]           = { vec.GetNumPoints( 0 )-1 , vec.GetNumPoints( 1 )-1 , vec.GetNumPoints( 2 )-1 } ;
     const size_t  numXY                   = dims[0] * dims[1] ;
@@ -44,7 +44,7 @@ void UniformGridMath::ComputeJacobian( UniformGrid< glm::mat3 > & jacobian , con
             {
                 ASSIGN_XYZ_OFFSETS ;
 
-                glm::mat3 & rMatrix = jacobian[ offsetX0Y0Z0 ] ;
+                ofMatrix3x3 & rMatrix = jacobian[ offsetX0Y0Z0 ] ;
                 /// Compute d/dx
                 rMatrix[0] = ( vec[ offsetXPY0Z0 ] - vec[ offsetXMY0Z0 ] ) * halfReciprocalSpacing.x ;
                 /// Compute d/dy
@@ -59,7 +59,7 @@ void UniformGridMath::ComputeJacobian( UniformGrid< glm::mat3 > & jacobian , con
 // Compute derivatives for boundaries: 6 faces of box.
 // In some situations, these macros compute extraneous data.
 #define COMPUTE_FINITE_DIFF                                                                                                              \
-    glm::mat3 & rMatrix = jacobian[ offsetX0Y0Z0 ] ;                                                                                     \
+    ofMatrix3x3 & rMatrix = jacobian[ offsetX0Y0Z0 ] ;                                                                                     \
     if( index[0] == 0 )                     { rMatrix[0] = ( vec[ offsetXPY0Z0 ] - vec[ offsetX0Y0Z0 ] ) * reciprocalSpacing.x ;     }   \
     else if( index[0] == dimsMinus1[0] )    { rMatrix[0] = ( vec[ offsetX0Y0Z0 ] - vec[ offsetXMY0Z0 ] ) * reciprocalSpacing.x ;     }   \
     else                                    { rMatrix[0] = ( vec[ offsetXPY0Z0 ] - vec[ offsetXMY0Z0 ] ) * halfReciprocalSpacing.x ; }   \
@@ -168,7 +168,7 @@ void UniformGridMath::ComputeJacobian( UniformGrid< glm::mat3 > & jacobian , con
 
 }
 
-void UniformGridMath::ComputeCurlFromJacobian( UniformGrid< glm::vec3 > & curl , const UniformGrid< glm::mat3 > & jacobian ) {
+void UniformGridMath::ComputeCurlFromJacobian( UniformGrid< ofVec3f > & curl , const UniformGrid< ofMatrix3x3 > & jacobian ) {
 	const size_t  dims[3]     = { jacobian.GetNumPoints( 0 ) , jacobian.GetNumPoints( 1 ) , jacobian.GetNumPoints( 2 ) } ;
 	const size_t  numXY       = dims[0] * dims[1] ;
 	size_t        index[3] ;
@@ -183,11 +183,11 @@ void UniformGridMath::ComputeCurlFromJacobian( UniformGrid< glm::vec3 > & curl ,
 			for( index[0] = 0 ; index[0] < dims[0] ; ++ index[0] )
 			{
 				const size_t offsetXYZ = index[0] + offsetYZ ;
-				const glm::mat3 & j     = jacobian[ offsetXYZ ] ;
-				glm::vec3        & rCurl = curl[ offsetXYZ ] ;
+				const ofMatrix3x3 & j     = jacobian[ offsetXYZ ] ;
+				ofVec3f        & rCurl = curl[ offsetXYZ ] ;
                 // Meaning of j[i][k] is the derivative of the kth component with respect to i, i.e. di/dk.
-				// rCurl = glm::vec3( j.y.z - j.z.y , j.z.x - j.x.z , j.x.y - j.y.x ) ;
-				rCurl = glm::vec3( j[1][2] - j[2][1] , j[2][0] - j[0][2] , j[0][1] - j[1][0] ) ;
+				// rCurl = ofVec3f( j.y.z - j.z.y , j.z.x - j.x.z , j.x.y - j.y.x ) ;
+				rCurl = ofVec3f( j[1][2] - j[2][1] , j[2][0] - j[0][2] , j[0][1] - j[1][0] ) ;
 
 			}
 		}
