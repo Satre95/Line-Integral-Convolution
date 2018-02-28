@@ -1,5 +1,5 @@
 #pragma once
-#include <cinder/Vector.h>
+#include "ofVectorMath.h"
 
 /*! \brief Base class for uniform grid.
 
@@ -70,7 +70,7 @@ public:
 
 	 \see Clear, DefineShape
 	 */
-	UniformGridGeometry(size_t uNumElements, const glm::vec3 & vMin, const glm::vec3 & vMax, bool bPowerOf2 = true)
+	UniformGridGeometry(size_t uNumElements, const ofVec3f & vMin, const ofVec3f & vMax, bool bPowerOf2 = true)
 	{
 		DefineShape(uNumElements, vMin, vMax, bPowerOf2);
 	}
@@ -96,7 +96,7 @@ public:
 	 (2,3,0) then this class considers the region to have 2 dimensions
 	 (x and y) since the z size is zero.
 	 */
-	virtual void DefineShape(size_t uNumElements, const glm::vec3 & vMin, const glm::vec3 & vMax, bool bPowerOf2);
+	virtual void DefineShape(size_t uNumElements, const ofVec3f & vMin, const ofVec3f & vMax, bool bPowerOf2);
 
 	/*! \brief Create a lower-resolution uniform grid based on another
 
@@ -121,7 +121,7 @@ public:
 	\note Derived class defines the actual contents array.
 
 	*/
-	virtual void IndicesOfPosition(size_t indices[3], const glm::vec3 & vPosition) const;
+	virtual void IndicesOfPosition(size_t indices[3], const ofVec3f & vPosition) const;
 
 	/*! \brief Compute offset into contents array of a point at a given position
 
@@ -134,7 +134,7 @@ public:
 	\note Derived class defines the actual contents array.
 
 	*/
-	virtual size_t OffsetOfPosition(const glm::vec3 & vPosition);
+	virtual size_t OffsetOfPosition(const ofVec3f & vPosition);
 
 	/*! \brief Compute position of minimal corner of grid cell with given indices
 
@@ -149,7 +149,7 @@ public:
 	GetCellSpacing instead of computing it each iteration.
 
 	*/
-	virtual void PositionFromIndices(glm::vec3 & vPosition, const size_t indices[3]) const;
+	virtual void PositionFromIndices(ofVec3f & vPosition, const size_t indices[3]) const;
 
 	/*! \brief Compute X,Y,Z grid cell indices from offset into contents array.
 
@@ -173,11 +173,11 @@ public:
 	\note Derived class provides actual contents array.
 
 	*/
-	virtual void    PositionFromOffset(glm::vec3 & vPos, const size_t & offset);
+	virtual void    PositionFromOffset(ofVec3f & vPos, const size_t & offset);
 
 	//Getters and Setters
-	glm::vec3 & GetExtent() { return mGridExtent; }
-	const glm::vec3 & GetExtent() const { return mGridExtent; }
+	ofVec3f & GetExtent() { return mGridExtent; }
+	const ofVec3f & GetExtent() const { return mGridExtent; }
 
 	/// Get number of grid cells along the given dimension
 	size_t GetNumCells(const size_t & index) const {
@@ -189,13 +189,13 @@ public:
 		return mNumPoints[index];
 	}
 
-	const glm::vec3 & GetMinCorner() const { return mMinCorner; }
-	glm::vec3 & GetMinCorner() { return mMinCorner; }
-	const glm::vec3 & GetCellsPerExtent() const { return mCellsPerExtent; }
-	glm::vec3 & GetCellsPerExtent() { return mCellsPerExtent; }
+	const ofVec3f & GetMinCorner() const { return mMinCorner; }
+	ofVec3f & GetMinCorner() { return mMinCorner; }
+	const ofVec3f & GetCellsPerExtent() const { return mCellsPerExtent; }
+	ofVec3f & GetCellsPerExtent() { return mCellsPerExtent; }
 	size_t GetGridCapacity() const { return GetNumPoints(0) * GetNumPoints(1) * GetNumPoints(2); }
-	const glm::vec3 & GetCellSpacing() const { return mCellExtent; }
-	glm::vec3 & GetCellSpacing() { return mCellExtent; }
+	const ofVec3f & GetCellSpacing() const { return mCellExtent; }
+	ofVec3f & GetCellSpacing() { return mCellExtent; }
 
 protected:
 
@@ -229,13 +229,13 @@ protected:
 		mMinCorner =
 			mGridExtent =
 			mCellExtent =
-			mCellsPerExtent = glm::vec3(0.0f, 0.0f, 0.0f);
+			mCellsPerExtent = ofVec3f(0.0f, 0.0f, 0.0f);
 		mNumPoints[0] = mNumPoints[1] = mNumPoints[2] = 0;
 	}
 
-	glm::vec3        mMinCorner;   ///< Minimum position (in world units) of grid in X, Y and Z directions.
-	glm::vec3        mGridExtent;   ///< Size (in world units) of grid in X, Y and Z directions.
-	glm::vec3        mCellExtent;   ///< Size (in world units) of a cell.
-	glm::vec3        mCellsPerExtent;   ///< Reciprocal of cell size (precomputed once to avoid excess divides).
+	ofVec3f        mMinCorner;   ///< Minimum position (in world units) of grid in X, Y and Z directions.
+	ofVec3f        mGridExtent;   ///< Size (in world units) of grid in X, Y and Z directions.
+	ofVec3f        mCellExtent;   ///< Size (in world units) of a cell.
+	ofVec3f        mCellsPerExtent;   ///< Reciprocal of cell size (precomputed once to avoid excess divides).
 	size_t              mNumPoints[3];   ///< Number of gridpoints along X, Y and Z directions.
 };
