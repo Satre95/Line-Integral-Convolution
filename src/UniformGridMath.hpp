@@ -1,6 +1,7 @@
 #pragma once
 
-#include "ofVectorMath.h"
+#include "ofVec3f.h"
+#include "Mat3.hpp" // Use my custom vector type.
 #include "UniformGrid.hpp"
 
 /// Mathematical routines for UniformGrids of vectors or matrices
@@ -20,7 +21,7 @@ public:
 	    \param vec - UniformGrid of 3-vector values
 
 	*/
-	static void ComputeJacobian( UniformGrid< ofMatrix3x3 > & jacobian , const UniformGrid< ofVec3f > & vec ) ;
+	static void ComputeJacobian( UniformGrid< Mat3 > & jacobian , const UniformGrid< ofVec3f > & vec ) ;
 
 	/*! \brief Compute curl of a vector field, from its Jacobian
 
@@ -31,7 +32,7 @@ public:
 	    \see ComputeJacobian.
 
 	*/
-	static void ComputeCurlFromJacobian( UniformGrid< ofVec3f > & curl , const UniformGrid< ofMatrix3x3 > & jacobian ) ;
+	static void ComputeCurlFromJacobian( UniformGrid< ofVec3f > & curl , const UniformGrid< Mat3 > & jacobian ) ;
 
 private:
 	UniformGridMath(); // Non-instantiable class.

@@ -9,7 +9,7 @@ mPosition(0), mVorticity(1.f), mRadius(1.f), mVelocity(0.f)
 	
 }
 
-Vorton::Vorton(vec3 pos, vec3 vorticity, float rad, vec2 velocity) :
+Vorton::Vorton(ofVec3f pos, ofVec3f vorticity, float rad, ofVec2f velocity) :
 mPosition(pos), mVorticity(vorticity), mRadius(rad), mVelocity(velocity)
 {
 }
@@ -24,14 +24,14 @@ Vorton::~Vorton() {
 	
 }
 
-void Vorton::AccumulateVelocity(vec3 &velocityOut, const vec3 &posQuery) {
-    static float oneOverFourPi = 1.f / (4.f * glm::pi<float>());
+void Vorton::AccumulateVelocity(ofVec3f &velocityOut, const ofVec3f &posQuery) {
+    static float oneOverFourPi = 1.f / (FOUR_PI);
     
-    const vec3          vNeighborToSelf     = posQuery - mPosition;
+    const ofVec3f          vNeighborToSelf     = posQuery - mPosition;
     const float         radius2             = mRadius * mRadius;
-    const float         dist2               = glm::length2(vNeighborToSelf) + sAvoidSingularity;
+    const float         dist2               = vNeighborToSelf.lengthSquared() + sAvoidSingularity;
     const float         oneOverDist         = finvsqrtf( dist2 );
-//    const vec3          vNeighborToSelfDir  = vNeighborToSelf * oneOverDist;
+//    const ofVec3f          vNeighborToSelfDir  = vNeighborToSelf * oneOverDist;
     /* If the reciprocal law is used everywhere then when 2 vortices get close, they tend to jettison. */
     /* Mitigate this by using a linear law when 2 vortices get close to each other. */
     const float distLaw = ( dist2 < radius2 )
@@ -39,14 +39,13 @@ void Vorton::AccumulateVelocity(vec3 &velocityOut, const vec3 &posQuery) {
     ( oneOverDist / radius2 )
     :   /* Outside vortex core */
     ( oneOverDist / dist2 );
-    velocityOut +=  glm::cross(oneOverFourPi * ( 8.0f * radius2 * mRadius ) * mVorticity, vNeighborToSelf) * distLaw ;   \
+    velocityOut +=  (oneOverFourPi * ( 8.0f * radius2 * mRadius ) * mVorticity).cross(vNeighborToSelf) * distLaw;
 
 }
 
-void Vorton::AssignByVelocity(const vec3 &queryPosition, const vec3 velocity) {
-    const vec3  posRelative    = queryPosition - mPosition;
-    const float dist            = glm::length(posRelative);
-    static float fourPi = 4.f * glm::pi<float>();
+void Vorton::AssignByVelocity(const ofVec3f &queryPosition, const ofVec3f velocity) {
+    const ofVec3f  posRelative    = queryPosition - mPosition;
+    const float dist            = posRelative.length();
     
-    mVorticity = glm::cross(fourPi * dist * posRelative, velocity) / ( 8.0f * mRadius * mRadius * mRadius ) ;
+    mVorticity = (FOUR_PI * dist * posRelative).cross(velocity) / ( 8.0f * mRadius * mRadius * mRadius ) ;
 }
