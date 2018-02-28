@@ -4,6 +4,7 @@
 #include "ofVec3f.h"
 #include <vector>
 #include <array>
+#include <algorithm>
 
 /// Templated nested uniform grid container, a hierarchical, octree-like spatial partition.
 template <class TypeT> class NestedGrid {
@@ -177,9 +178,9 @@ size_t NestedGrid<TypeT>::PrecomputeNumLayers( const Layer & src )
     {   // Layer has more than 1 cell.
         ++ numLayers ;
         // Decimate number of cells (where #cells = #points-1):
-        numPoints[0] = glm::max( ( numPoints[0] - 1 ) / 2 , size_t(1) ) + 1 ;
-        numPoints[1] = glm::max( ( numPoints[1] - 1 ) / 2 , size_t(1) ) + 1 ;
-        numPoints[2] = glm::max( ( numPoints[2] - 1 ) / 2 , size_t(1) ) + 1 ;
+        numPoints[0] = std::max( ( numPoints[0] - 1 ) / 2 , size_t(1) ) + 1 ;
+        numPoints[1] = std::max( ( numPoints[1] - 1 ) / 2 , size_t(1) ) + 1 ;
+        numPoints[2] = std::max( ( numPoints[2] - 1 ) / 2 , size_t(1) ) + 1 ;
         size = numPoints[0] * numPoints[1] * numPoints[2] ;
     }
     return numLayers ;

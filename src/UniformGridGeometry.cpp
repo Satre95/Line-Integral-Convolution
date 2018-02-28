@@ -1,15 +1,14 @@
 #include "UniformGridGeometry.hpp"
 #include "math_helper.hpp"
 #include <algorithm>
-using namespace cinder;
 
-void UniformGridGeometry::DefineShape(size_t uNumElements, const vec3 & vMin, const vec3 & vMax, bool bPowerOf2)
+void UniformGridGeometry::DefineShape(size_t uNumElements, const ofVec3f & vMin, const ofVec3f & vMax, bool bPowerOf2)
 {
 	mMinCorner = vMin;
 	static const float Nudge = 1.0f + FLT_EPSILON;  // slightly expand size to ensure robust containment even with roundoff
 	mGridExtent = (vMax - vMin) * Nudge;
 
-	vec3 vSizeEffective(GetExtent());
+	ofVec3f vSizeEffective(GetExtent());
 	int numDims = 3;   // Number of dimensions to region.
 	if (0.0f == vSizeEffective.x)
 	{   // X size is zero so reduce dimensionality
@@ -93,25 +92,25 @@ void UniformGridGeometry::Decimate(const UniformGridGeometry & src, int iDecimat
 	PrecomputeSpacing();
 }
 
-void UniformGridGeometry::IndicesOfPosition(size_t indices[3], const vec3 & vPosition) const
+void UniformGridGeometry::IndicesOfPosition(size_t indices[3], const ofVec3f & vPosition) const
 {
 	// Notice the pecular test here.  vPosition may lie slightly outside of the extent give by vMax.
 	// Review the geometry described in the class header comment.
-	vec3 vPosRel(vPosition - GetMinCorner());   // position of given point relative to container region
-	vec3 vIdx(vPosRel.x * GetCellsPerExtent().x, vPosRel.y * GetCellsPerExtent().y, vPosRel.z * GetCellsPerExtent().z);
+	ofVec3f vPosRel(vPosition - GetMinCorner());   // position of given point relative to container region
+	ofVec3f vIdx(vPosRel.x * GetCellsPerExtent().x, vPosRel.y * GetCellsPerExtent().y, vPosRel.z * GetCellsPerExtent().z);
 	indices[0] = unsigned(vIdx.x);
 	indices[1] = unsigned(vIdx.y);
 	indices[2] = unsigned(vIdx.z);
 }
 
-size_t UniformGridGeometry::OffsetOfPosition(const vec3 & vPosition) {
+size_t UniformGridGeometry::OffsetOfPosition(const ofVec3f & vPosition) {
 	size_t indices[3];
 	IndicesOfPosition(indices, vPosition);
 	const size_t offset = indices[0] + GetNumPoints(0) * (indices[1] + GetNumPoints(1) * indices[2]);
 	return offset;
 }
 
-void UniformGridGeometry::PositionFromIndices(vec3 & vPosition, const size_t indices[3]) const
+void UniformGridGeometry::PositionFromIndices(ofVec3f & vPosition, const size_t indices[3]) const
 {
 	vPosition.x = GetMinCorner().x + float(indices[0]) * GetCellSpacing().x;
 	vPosition.y = GetMinCorner().y + float(indices[1]) * GetCellSpacing().y;
@@ -125,7 +124,7 @@ void UniformGridGeometry::IndicesFromOffset(size_t indices[3], const size_t & of
 	indices[0] = offset - GetNumPoints(0) * (indices[1] + GetNumPoints(1) * indices[2]);
 }
 
-void UniformGridGeometry::PositionFromOffset(vec3 & vPos, const size_t & offset)
+void UniformGridGeometry::PositionFromOffset(ofVec3f & vPos, const size_t & offset)
 {
 	size_t indices[3];
 	IndicesFromOffset(indices, offset);

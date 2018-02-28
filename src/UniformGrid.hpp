@@ -15,7 +15,7 @@ public:
 	/*! \brief Construct a uniform grid container that fits the given geometry.
 		\see Initialize
     */
-	UniformGrid( unsigned uNumElements , const glm::vec3 & vMin , const glm::vec3 & vMax , bool bPowerOf2 = true)
+	UniformGrid( unsigned uNumElements , const ofVec3f & vMin , const ofVec3f & vMax , bool bPowerOf2 = true)
 	: UniformGridGeometry( uNumElements , vMin , vMax , bPowerOf2 ) {}
 
     /// Copy shape from given uniform grid
@@ -34,7 +34,7 @@ public:
 	/// Initialize contents to whatever default ctor provides
 	void Init() { mContents.resize(GetGridCapacity()); }
 
-	virtual void DefineShape( size_t uNumElements , const glm::vec3 & vMin , const glm::vec3 & vMax , bool bPowerOf2 ) override {
+	virtual void DefineShape( size_t uNumElements , const ofVec3f & vMin , const ofVec3f & vMax , bool bPowerOf2 ) override {
 		mContents.clear();
 		Parent::DefineShape(uNumElements, vMin, vMax, bPowerOf2);
 	}
@@ -54,8 +54,8 @@ public:
 		for( size_t offset = 0 ; offset < numCells ; ++ offset )
 		{
 			const TypeT & rVal = (*this)[ offset ] ;
-			min = glm::min( min , rVal ) ;
-			max = glm::max( max , rVal ) ;
+            min = std::min( min , rVal ) ;
+            max = std::max( max , rVal ) ;
 		}
 	}
     /*! \brief Interpolate values from grid to get value at given position
@@ -65,16 +65,16 @@ public:
 	    \return Interpolated value corresponding to value of grid contents at vPosition.
 
     */
-	void Interpolate(TypeT &vResult, const glm::vec3 &vPosition) const {
+	void Interpolate(TypeT &vResult, const ofVec3f &vPosition) const {
 		//TODO: Replace with std::tuple refs to avoid unnecessary copies.
 		size_t        indices[3] ; // Indices of grid cell containing position.
 		Parent::IndicesOfPosition( indices , vPosition ) ;
-		glm::vec3            vMinCorner ;
+		ofVec3f            vMinCorner ;
 		Parent::PositionFromIndices( vMinCorner , indices ) ;
 		const unsigned  offsetX0Y0Z0 = OffsetFromIndices( indices ) ;
-	            const glm::vec3      vDiff         = vPosition - vMinCorner ; // Relative location of position within its containing grid cell.
-	            const glm::vec3      tween         = glm::vec3( vDiff.x * GetCellsPerExtent().x , vDiff.y * GetCellsPerExtent().y , vDiff.z * GetCellsPerExtent().z ) ;
-	            const glm::vec3      oneMinusTween = glm::vec3( 1.0f , 1.0f , 1.0f ) - tween ;
+	            const ofVec3f      vDiff         = vPosition - vMinCorner ; // Relative location of position within its containing grid cell.
+	            const ofVec3f      tween         = ofVec3f( vDiff.x * GetCellsPerExtent().x , vDiff.y * GetCellsPerExtent().y , vDiff.z * GetCellsPerExtent().z ) ;
+	            const ofVec3f      oneMinusTween = ofVec3f( 1.0f , 1.0f , 1.0f ) - tween ;
 	            const unsigned  numXY         = GetNumPoints( 0 ) * GetNumPoints( 1 ) ;
 	            const unsigned  offsetX1Y0Z0  = offsetX0Y0Z0 + 1 ;
 	            const unsigned  offsetX0Y1Z0  = offsetX0Y0Z0 + GetNumPoints(0) ;
@@ -94,15 +94,15 @@ public:
 	}
 
     /// Insert given value into grid at given position
-    void Insert( const glm::vec3 & vPosition , const TypeT & item ) {
+    void Insert( const ofVec3f & vPosition , const TypeT & item ) {
         size_t        indices[3] ; // Indices of grid cell containing position.
         Parent::IndicesOfPosition( indices , vPosition ) ;
-        glm::vec3            vMinCorner ;
+        ofVec3f            vMinCorner ;
         Parent::PositionFromIndices( vMinCorner , indices ) ;
         const unsigned  offsetX0Y0Z0 = OffsetFromIndices( indices ) ;
-        const glm::vec3      vDiff         = vPosition - vMinCorner ; // Relative location of position within its containing grid cell.
-        const glm::vec3      tween         = glm::vec3( vDiff.x * GetCellsPerExtent().x , vDiff.y * GetCellsPerExtent().y , vDiff.z * GetCellsPerExtent().z ) ;
-        const glm::vec3      oneMinusTween = glm::vec3( 1.0f , 1.0f , 1.0f ) - tween ;
+        const ofVec3f      vDiff         = vPosition - vMinCorner ; // Relative location of position within its containing grid cell.
+        const ofVec3f      tween         = ofVec3f( vDiff.x * GetCellsPerExtent().x , vDiff.y * GetCellsPerExtent().y , vDiff.z * GetCellsPerExtent().z ) ;
+        const ofVec3f      oneMinusTween = ofVec3f( 1.0f , 1.0f , 1.0f ) - tween ;
         const unsigned  numXY         = GetNumPoints( 0 ) * GetNumPoints( 1 ) ;
         const unsigned  offsetX1Y0Z0  = offsetX0Y0Z0 + 1 ;
         const unsigned  offsetX0Y1Z0  = offsetX0Y0Z0 + GetNumPoints(0) ;
