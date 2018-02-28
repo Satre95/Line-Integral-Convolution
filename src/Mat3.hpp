@@ -9,8 +9,8 @@ public:
     
     const float & operator()(size_t row, size_t col) const;
     float & operator()(size_t row, size_t col);
-    ofVec3f operator[](size_t i);
-    const ofVec3f operator[](size_t i) const;
+    ofVec3f & operator[](size_t i);
+    const ofVec3f & operator[](size_t i) const;
 
 private:
     const float & Get(size_t row, size_t col) const;
@@ -27,7 +27,7 @@ private:
      [ c f i ]
      \verbatim
     */
-    std::array<float, 9> mData;
+    std::array<ofVec3f, 3> mData;
 };
 
 
@@ -40,16 +40,34 @@ float & Mat3::operator()(size_t row, size_t col) {
 }
 
 const float & Mat3::Get(size_t row, size_t col) const {
-    return mData.at(col * 3 + row);
+    switch (col) {
+        case 0:
+            return mData.at(row).x;
+        
+        case 1:
+            return mData.at(row).y;
+            
+        default:
+            return mData.at(row).z;
+    }
 }
 float & Mat3::Get(size_t row, size_t col) {
-    return mData.at(col * 3 + row);
+    switch (col) {
+        case 0:
+            return mData.at(row).x;
+            
+        case 1:
+            return mData.at(row).y;
+            
+        default:
+            return mData.at(row).z;
+    }
 }
 
-ofVec3f Mat3::operator[](size_t i) {
-    return ofVec3f(Get(0, i), Get(1, i), Get(2, i));
+ofVec3f & Mat3::operator[](size_t i) {
+    return mData.at(i);
 }
 
-const ofVec3f Mat3::operator[](size_t i) const {
-    return ofVec3f(Get(0, i), Get(1, i), Get(2, i));
+const ofVec3f & Mat3::operator[](size_t i) const {
+    return mData.at(i);
 }
