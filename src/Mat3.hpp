@@ -4,7 +4,11 @@
 
 class Mat3 {
 public:
-    Mat3() {}
+    /// Inits a matrix to the identity.
+    Mat3() {
+        Get(0,0) = 1.f; Get(1,1) = 1.f; Get(2,2) = 1.f;
+    }
+    
     ~Mat3() {}
     
     const float & operator()(size_t row, size_t col) const;
@@ -40,7 +44,7 @@ float & Mat3::operator()(size_t row, size_t col) {
 }
 
 const float & Mat3::Get(size_t row, size_t col) const {
-    switch (col) {
+    switch (col) { //ofVec3f doesn't return refs with the [] operator :(
         case 0:
             return mData.at(row).x;
         
@@ -52,7 +56,7 @@ const float & Mat3::Get(size_t row, size_t col) const {
     }
 }
 float & Mat3::Get(size_t row, size_t col) {
-    switch (col) {
+    switch (col) { //ofVec3f doesn't return refs with the [] operator :(
         case 0:
             return mData.at(row).x;
             
