@@ -45,7 +45,6 @@ public:
      */
     void AssignByVelocity(const ofVec3f & queryPosition, const ofVec3f velocity);
     
-private:
     ofVec3f mPosition;
     ofVec3f mVorticity;
     float mRadius;

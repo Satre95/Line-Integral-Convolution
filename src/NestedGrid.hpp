@@ -165,7 +165,7 @@ template <class TypeT>
 void NestedGrid<TypeT>::Clear()  {
     for( size_t iLayer = 0 ; iLayer < GetDepth() ; ++ iLayer )
         mLayers.at(iLayer).Clear() ;
-    mLayers.Clear() ;
+    mLayers.clear() ;
 }
 
 template <class TypeT>

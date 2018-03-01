@@ -39,7 +39,7 @@ void Vorton::AccumulateVelocity(ofVec3f &velocityOut, const ofVec3f &posQuery) {
     ( oneOverDist / radius2 )
     :   /* Outside vortex core */
     ( oneOverDist / dist2 );
-    velocityOut +=  (oneOverFourPi * ( 8.0f * radius2 * mRadius ) * mVorticity).cross(vNeighborToSelf) * distLaw;
+    velocityOut +=  (oneOverFourPi * ( 8.0f * radius2 * mRadius ) * mVorticity).getCrossed(vNeighborToSelf) * distLaw;
 
 }
 
@@ -47,5 +47,5 @@ void Vorton::AssignByVelocity(const ofVec3f &queryPosition, const ofVec3f veloci
     const ofVec3f  posRelative    = queryPosition - mPosition;
     const float dist            = posRelative.length();
     
-    mVorticity = (FOUR_PI * dist * posRelative).cross(velocity) / ( 8.0f * mRadius * mRadius * mRadius ) ;
+    mVorticity = (FOUR_PI * dist * posRelative).getCrossed(velocity) / ( 8.0f * mRadius * mRadius * mRadius ) ;
 }
