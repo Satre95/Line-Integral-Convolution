@@ -197,6 +197,8 @@ public:
 	const ofVec3f & GetCellSpacing() const { return mCellExtent; }
 	ofVec3f & GetCellSpacing() { return mCellExtent; }
 
+	virtual void CopyShape(const UniformGridGeometry & src) { Decimate(src, 1); }
+
 protected:
 
 	/// Precompute grid spacing, to optimize OffsetOfPosition and other utility routines.
