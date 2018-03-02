@@ -902,15 +902,23 @@ void VortonSim::Update( float timeStep , size_t uFrame )
  */
 void VortonSim::InitializePassiveTracers( size_t multiplier )
 {
-    const ofVec3f      vSpacing        = mInfluenceTree[0].GetCellSpacing() ;
+    const ofVec3f vSpacing = mInfluenceTree[0].GetCellSpacing() ;
     // Must keep tracers away from maximal boundary by at least cell.  Note the +vHalfSpacing in loop.
-    const size_t  begin[3]        = { 1*mInfluenceTree[0].GetNumCells(0)/8 , 1*mInfluenceTree[0].GetNumCells(1)/8 , 1*mInfluenceTree[0].GetNumCells(2)/8 } ;
-    const size_t  end[3]          = { 7*mInfluenceTree[0].GetNumCells(0)/8 , 7*mInfluenceTree[0].GetNumCells(1)/8 , 7*mInfluenceTree[0].GetNumCells(2)/8 } ;
-    const float     pclSize         = 2.0f * powf( vSpacing.x * vSpacing.y * vSpacing.z , 2.0f / 3.0f ) / float( multiplier ) ;
-    const ofVec3f      noise           = vSpacing / float( multiplier ) ;
-    size_t        idx[3]          ;
-    
-    const size_t  nt[3]           = { multiplier , multiplier , multiplier } ;
+    const size_t begin[3] = {
+        1*mInfluenceTree[0].GetNumCells(0)/8 ,
+        1*mInfluenceTree[0].GetNumCells(1)/8 ,
+        1*mInfluenceTree[0].GetNumCells(2)/8
+    } ;
+    const size_t end[3] = {
+        7*mInfluenceTree[0].GetNumCells(0)/8 ,
+        7*mInfluenceTree[0].GetNumCells(1)/8 ,
+        7*mInfluenceTree[0].GetNumCells(2)/8
+    };
+    const float pclSize = 2.0f * powf( vSpacing.x * vSpacing.y * vSpacing.z , 2.0f / 3.0f ) / float( multiplier ) ;
+    const ofVec3f noise = vSpacing / float( multiplier ) ;
+    size_t idx[3];
+
+    const size_t nt[3] = { multiplier , multiplier , multiplier } ;
     
     for( idx[2] = begin[2] ; idx[2] <= end[2] ; ++ idx[2] )
         for( idx[1] = begin[1] ; idx[1] <= end[1] ; ++ idx[1] )
@@ -919,11 +927,11 @@ void VortonSim::InitializePassiveTracers( size_t multiplier )
                 ofVec3f vPosMinCorner ;
                 mInfluenceTree[0].PositionFromIndices( vPosMinCorner , idx ) ;
                 Particle pcl ;
-                pcl.mVelocity            = ofVec3f( 0.0f , 0.0f , 0.0f ) ;
+                pcl.mVelocity           = ofVec3f( 0.0f , 0.0f , 0.0f ) ;
                 pcl.mOrientation        = ofVec3f( 0.0f , 0.0f , 0.0f ) ;
                 pcl.mAngularVelocity    = ofVec3f( 0.0f , 0.0f , 0.0f ) ;
                 pcl.mMass               = 1.0f ;
-                pcl.mSize                = pclSize ;
+                pcl.mSize               = pclSize ;
                 pcl.mBirthTime          = 0 ;
                 
                 size_t it[3] ;
@@ -942,7 +950,7 @@ void VortonSim::InitializePassiveTracers( size_t multiplier )
 
 
 
-const ofVec3f VortonSim::GetTracerCenterOfMass( void ) const
+const ofVec3f VortonSim::GetTracerCenterOfMass() const
 {
     ofVec3f vCoM( 0.0f , 0.0f , 0.0f ) ;
     const size_t & numTracers = mTracers.size() ;
