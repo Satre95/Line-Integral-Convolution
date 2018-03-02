@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include "ofVec3f.h"
 
 class Mat3 {
 public:
@@ -9,12 +10,34 @@ public:
         Get(0,0) = 1.f; Get(1,1) = 1.f; Get(2,2) = 1.f;
     }
     
-    ~Mat3() {}
-    
     const float & operator()(size_t row, size_t col) const;
     float & operator()(size_t row, size_t col);
     ofVec3f & operator[](size_t i);
     const ofVec3f & operator[](size_t i) const;
+    
+    /// \brief Add two matrices
+    Mat3 operator+(const Mat3& B) const;
+    
+    /// \brief Add matrix to existing matrix
+    void operator+=(const Mat3& B);
+    
+    /// \brief Subtract two matrices
+    Mat3 operator-(const Mat3& B) const;
+    
+    /// \brief Subtract matrix from existing matrix
+    void operator-=(const Mat3& B);
+    
+    /// \brief Multiply a matrix with a scalar
+    Mat3 operator*(float scalar) const;
+    
+    /// \brief Multiply a matrix by a matrix this = this*B (in that order)
+    void operator*=(const Mat3& B);
+    
+    /// \brief Multiply a matrix by a scalar (multiples all entries by scalar)
+    void operator*=(float scalar);
+    
+    /// \brief Multiply this matrix with a vector and return a a vector.
+    ofVec3f operator*(const ofVec3f & vec) const;
 
 private:
     const float & Get(size_t row, size_t col) const;
@@ -34,44 +57,6 @@ private:
     std::array<ofVec3f, 3> mData;
 };
 
-
-const float & Mat3::operator()(size_t row, size_t col) const {
-    return Get(row, col);
-}
-
-float & Mat3::operator()(size_t row, size_t col) {
-    return Get(row, col);
-}
-
-const float & Mat3::Get(size_t row, size_t col) const {
-    switch (col) { //ofVec3f doesn't return refs with the [] operator :(
-        case 0:
-            return mData.at(row).x;
-        
-        case 1:
-            return mData.at(row).y;
-            
-        default:
-            return mData.at(row).z;
-    }
-}
-float & Mat3::Get(size_t row, size_t col) {
-    switch (col) { //ofVec3f doesn't return refs with the [] operator :(
-        case 0:
-            return mData.at(row).x;
-            
-        case 1:
-            return mData.at(row).y;
-            
-        default:
-            return mData.at(row).z;
-    }
-}
-
-ofVec3f & Mat3::operator[](size_t i) {
-    return mData.at(i);
-}
-
-const ofVec3f & Mat3::operator[](size_t i) const {
-    return mData.at(i);
+Mat3 operator*(const float & scalar, const Mat3 & mat) {
+    return mat * scalar;
 }

@@ -15,7 +15,7 @@ public:
 	/*! \brief Construct a uniform grid container that fits the given geometry.
 		\see Initialize
 	*/
-	UniformGrid(unsigned uNumElements, const ofVec3f & vMin, const ofVec3f & vMax, bool bPowerOf2 = true)
+	UniformGrid(size_t uNumElements, const ofVec3f & vMin, const ofVec3f & vMax, bool bPowerOf2 = true)
 		: UniformGridGeometry(uNumElements, vMin, vMax, bPowerOf2) {}
 
 	/// Copy shape from given uniform grid
@@ -87,18 +87,18 @@ public:
 		Parent::IndicesOfPosition(indices, vPosition);
 		ofVec3f            vMinCorner;
 		Parent::PositionFromIndices(vMinCorner, indices);
-		const unsigned  offsetX0Y0Z0 = OffsetFromIndices(indices);
+		const size_t  offsetX0Y0Z0 = OffsetFromIndices(indices);
 		const ofVec3f      vDiff = vPosition - vMinCorner; // Relative location of position within its containing grid cell.
 		const ofVec3f      tween = ofVec3f(vDiff.x * GetCellsPerExtent().x, vDiff.y * GetCellsPerExtent().y, vDiff.z * GetCellsPerExtent().z);
 		const ofVec3f      oneMinusTween = ofVec3f(1.0f, 1.0f, 1.0f) - tween;
-		const unsigned  numXY = GetNumPoints(0) * GetNumPoints(1);
-		const unsigned  offsetX1Y0Z0 = offsetX0Y0Z0 + 1;
-		const unsigned  offsetX0Y1Z0 = offsetX0Y0Z0 + GetNumPoints(0);
-		const unsigned  offsetX1Y1Z0 = offsetX0Y0Z0 + GetNumPoints(0) + 1;
-		const unsigned  offsetX0Y0Z1 = offsetX0Y0Z0 + numXY;
-		const unsigned  offsetX1Y0Z1 = offsetX0Y0Z0 + numXY + 1;
-		const unsigned  offsetX0Y1Z1 = offsetX0Y0Z0 + numXY + GetNumPoints(0);
-		const unsigned  offsetX1Y1Z1 = offsetX0Y0Z0 + numXY + GetNumPoints(0) + 1;
+		const size_t  numXY = GetNumPoints(0) * GetNumPoints(1);
+		const size_t  offsetX1Y0Z0 = offsetX0Y0Z0 + 1;
+		const size_t  offsetX0Y1Z0 = offsetX0Y0Z0 + GetNumPoints(0);
+		const size_t  offsetX1Y1Z0 = offsetX0Y0Z0 + GetNumPoints(0) + 1;
+		const size_t  offsetX0Y0Z1 = offsetX0Y0Z0 + numXY;
+		const size_t  offsetX1Y0Z1 = offsetX0Y0Z0 + numXY + 1;
+		const size_t  offsetX0Y1Z1 = offsetX0Y0Z0 + numXY + GetNumPoints(0);
+		const size_t  offsetX1Y1Z1 = offsetX0Y0Z0 + numXY + GetNumPoints(0) + 1;
 		vResult = oneMinusTween.x * oneMinusTween.y * oneMinusTween.z * (*this)[offsetX0Y0Z0]
 			+ tween.x * oneMinusTween.y * oneMinusTween.z * (*this)[offsetX1Y0Z0]
 			+ oneMinusTween.x *         tween.y * oneMinusTween.z * (*this)[offsetX0Y1Z0]
@@ -115,18 +115,18 @@ public:
 		Parent::IndicesOfPosition(indices, vPosition);
 		ofVec3f            vMinCorner;
 		Parent::PositionFromIndices(vMinCorner, indices);
-		const unsigned  offsetX0Y0Z0 = OffsetFromIndices(indices);
+		const size_t  offsetX0Y0Z0 = OffsetFromIndices(indices);
 		const ofVec3f      vDiff = vPosition - vMinCorner; // Relative location of position within its containing grid cell.
 		const ofVec3f      tween = ofVec3f(vDiff.x * GetCellsPerExtent().x, vDiff.y * GetCellsPerExtent().y, vDiff.z * GetCellsPerExtent().z);
 		const ofVec3f      oneMinusTween = ofVec3f(1.0f, 1.0f, 1.0f) - tween;
-		const unsigned  numXY = GetNumPoints(0) * GetNumPoints(1);
-		const unsigned  offsetX1Y0Z0 = offsetX0Y0Z0 + 1;
-		const unsigned  offsetX0Y1Z0 = offsetX0Y0Z0 + GetNumPoints(0);
-		const unsigned  offsetX1Y1Z0 = offsetX0Y0Z0 + GetNumPoints(0) + 1;
-		const unsigned  offsetX0Y0Z1 = offsetX0Y0Z0 + numXY;
-		const unsigned  offsetX1Y0Z1 = offsetX0Y0Z0 + numXY + 1;
-		const unsigned  offsetX0Y1Z1 = offsetX0Y0Z0 + numXY + GetNumPoints(0);
-		const unsigned  offsetX1Y1Z1 = offsetX0Y0Z0 + numXY + GetNumPoints(0) + 1;
+		const size_t  numXY = GetNumPoints(0) * GetNumPoints(1);
+		const size_t  offsetX1Y0Z0 = offsetX0Y0Z0 + 1;
+		const size_t  offsetX0Y1Z0 = offsetX0Y0Z0 + GetNumPoints(0);
+		const size_t  offsetX1Y1Z0 = offsetX0Y0Z0 + GetNumPoints(0) + 1;
+		const size_t  offsetX0Y0Z1 = offsetX0Y0Z0 + numXY;
+		const size_t  offsetX1Y0Z1 = offsetX0Y0Z0 + numXY + 1;
+		const size_t  offsetX0Y1Z1 = offsetX0Y0Z0 + numXY + GetNumPoints(0);
+		const size_t  offsetX1Y1Z1 = offsetX0Y0Z0 + numXY + GetNumPoints(0) + 1;
 		(*this)[offsetX0Y0Z0] += oneMinusTween.x * oneMinusTween.y * oneMinusTween.z * item;
 		(*this)[offsetX1Y0Z0] += tween.x * oneMinusTween.y * oneMinusTween.z * item;
 		(*this)[offsetX0Y1Z0] += oneMinusTween.x *         tween.y * oneMinusTween.z * item;

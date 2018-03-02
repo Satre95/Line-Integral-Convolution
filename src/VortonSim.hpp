@@ -41,7 +41,7 @@ public:
     
     const UniformGrid< ofVec3f > & GetVelocityGrid() const       { return mVelGrid ; }
     const float & GetMassPerParticle() const    { return mMassPerParticle ; }
-    void Update( float timeStep , unsigned uFrame ) ;
+    void Update( float timeStep , size_t uFrame ) ;
     void Clear() {
         mVortons.clear() ;
         mInfluenceTree.Clear() ;

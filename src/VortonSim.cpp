@@ -587,7 +587,7 @@ void VortonSim::StretchAndTiltVortons(const float & timeStep, const size_t & uFr
 		Vorton &    rVorton = mVortons[offset];
 		Mat3       velJac;
 		velocityJacobianGrid.Interpolate(velJac, rVorton.mPosition);
-		const ofVec3f  stretchTilt = rVorton.mVorticity * velJac;    // Usual way to compute stretching & tilting
+		const ofVec3f  stretchTilt = velJac * rVorton.mVorticity;    // Usual way to compute stretching & tilting
 		rVorton.mVorticity += /* fudge factor for stability */ 0.5f * stretchTilt * timeStep;
 	}
 }
@@ -780,3 +780,178 @@ void VortonSim::DiffuseVorticityPSE(const float & timeStep, const size_t & uFram
 		}
 	}
 }
+
+/*! \brief Advect vortons using velocity field
+ 
+ \param timeStep - amount of time by which to advance simulation
+ 
+ \see ComputeVelocityGrid
+ 
+ */
+void VortonSim::AdvectVortons( const float & timeStep )
+{
+    const size_t numVortons = mVortons.size() ;
+    
+    for( size_t offset = 0 ; offset < numVortons ; ++ offset )
+    {   // For each vorton...
+        Vorton & rVorton = mVortons[ offset ] ;
+        ofVec3f velocity ;
+        mVelGrid.Interpolate( velocity , rVorton.mPosition ) ;
+        rVorton.mPosition += velocity * timeStep ;
+        rVorton.mVelocity = velocity ;  // Cache this for use in collisions with rigid bodies.
+    }
+}
+
+
+
+
+/*! \brief Advect (subset of) passive tracers using velocity field
+ 
+ \param timeStep - amount of time by which to advance simulation
+ 
+ \param uFrame - frame counter
+ 
+ \param itStart - index of first tracer to advect
+ 
+ \param itEnd - index of last tracer to advect
+ 
+ \see AdvectTracers
+ 
+ */
+void VortonSim::AdvectTracersSlice( const float & timeStep , const size_t & uFrame ,  size_t itStart , size_t itEnd )
+{
+    for( size_t offset = itStart ; offset < itEnd ; ++ offset )
+    {   // For each passive tracer in this slice...
+        Particle & rTracer = mTracers[ offset ] ;
+        ofVec3f velocity ;
+        mVelGrid.Interpolate( velocity , rTracer.mPosition ) ;
+        rTracer.mPosition += velocity * timeStep ;
+        rTracer.mVelocity  = velocity ; // Cache for use in collisions
+    }
+}
+
+
+
+
+/*! \brief Advect passive tracers using velocity field
+ 
+ \param timeStep - amount of time by which to advance simulation
+ 
+ \param uFrame - frame counter
+ 
+ \see AdvectVortons
+ 
+ */
+void VortonSim::AdvectTracers( const float & timeStep , const size_t & uFrame )
+{
+    const size_t numTracers = mTracers.size() ;
+    
+#if USE_TBB
+    // Estimate grain size based on size of problem and number of processors.
+    const size_t grainSize =  std::max( 1 , numTracers / gNumberOfProcessors ) ;
+    // Advect tracers using multiple threads.
+    parallel_for( tbb::blocked_range<size_t>( 0 , numTracers , grainSize ) , VortonSim_AdvectTracers_TBB( this , timeStep , uFrame ) ) ;
+#else
+    AdvectTracersSlice( timeStep , uFrame , 0 , numTracers ) ;
+#endif
+}
+
+
+
+
+/*! \brief Update vortex particle fluid simulation to next time.
+ 
+ \param timeStep - incremental amount of time to step forward
+ 
+ \param uFrame - frame counter, used to generate files
+ 
+ */
+void VortonSim::Update( float timeStep , size_t uFrame )
+{
+//    QUERY_PERFORMANCE_ENTER ;
+    CreateInfluenceTree() ;
+//    QUERY_PERFORMANCE_EXIT( VortonSim_CreateInfluenceTree ) ;
+    
+    
+//    QUERY_PERFORMANCE_ENTER ;
+    ComputeVelocityGrid() ;
+//    QUERY_PERFORMANCE_EXIT( VortonSim_ComputeVelocityGrid ) ;
+    
+//    QUERY_PERFORMANCE_ENTER ;
+    StretchAndTiltVortons( timeStep , uFrame ) ;
+//    QUERY_PERFORMANCE_EXIT( VortonSim_StretchAndTiltVortons ) ;
+    
+//    QUERY_PERFORMANCE_ENTER ;
+    DiffuseVorticityPSE( timeStep , uFrame ) ;
+//    QUERY_PERFORMANCE_EXIT( VortonSim_DiffuseVorticityPSE ) ;
+    
+//    QUERY_PERFORMANCE_ENTER ;
+    AdvectVortons( timeStep ) ;
+//    QUERY_PERFORMANCE_EXIT( VortonSim_AdvectVortons ) ;
+    
+//    QUERY_PERFORMANCE_ENTER ;
+    AdvectTracers( timeStep , uFrame ) ;
+//    QUERY_PERFORMANCE_EXIT( VortonSim_AdvectTracers ) ;
+}
+
+/*! \brief Initialize passive tracers
+ 
+ \note This method assumes the influence tree skeleton has already been created,
+ and the leaf layer initialized to all "zeros", meaning it contains no
+ vortons.
+ */
+void VortonSim::InitializePassiveTracers( size_t multiplier )
+{
+    const ofVec3f      vSpacing        = mInfluenceTree[0].GetCellSpacing() ;
+    // Must keep tracers away from maximal boundary by at least cell.  Note the +vHalfSpacing in loop.
+    const size_t  begin[3]        = { 1*mInfluenceTree[0].GetNumCells(0)/8 , 1*mInfluenceTree[0].GetNumCells(1)/8 , 1*mInfluenceTree[0].GetNumCells(2)/8 } ;
+    const size_t  end[3]          = { 7*mInfluenceTree[0].GetNumCells(0)/8 , 7*mInfluenceTree[0].GetNumCells(1)/8 , 7*mInfluenceTree[0].GetNumCells(2)/8 } ;
+    const float     pclSize         = 2.0f * powf( vSpacing.x * vSpacing.y * vSpacing.z , 2.0f / 3.0f ) / float( multiplier ) ;
+    const ofVec3f      noise           = vSpacing / float( multiplier ) ;
+    size_t        idx[3]          ;
+    
+    const size_t  nt[3]           = { multiplier , multiplier , multiplier } ;
+    
+    for( idx[2] = begin[2] ; idx[2] <= end[2] ; ++ idx[2] )
+        for( idx[1] = begin[1] ; idx[1] <= end[1] ; ++ idx[1] )
+            for( idx[0] = begin[0] ; idx[0] <= end[0] ; ++ idx[0] )
+            {   // For each interior grid cell...
+                ofVec3f vPosMinCorner ;
+                mInfluenceTree[0].PositionFromIndices( vPosMinCorner , idx ) ;
+                Particle pcl ;
+                pcl.mVelocity            = ofVec3f( 0.0f , 0.0f , 0.0f ) ;
+                pcl.mOrientation        = ofVec3f( 0.0f , 0.0f , 0.0f ) ;
+                pcl.mAngularVelocity    = ofVec3f( 0.0f , 0.0f , 0.0f ) ;
+                pcl.mMass               = 1.0f ;
+                pcl.mSize                = pclSize ;
+                pcl.mBirthTime          = 0 ;
+                
+                size_t it[3] ;
+                for( it[2] = 0 ; it[2] < nt[2] ; ++ it[2] )
+                    for( it[1] = 0 ; it[1] < nt[1] ; ++ it[1] )
+                        for( it[0] = 0 ; it[0] < nt[0] ; ++ it[0] )
+                        {
+                            ofVec3f vShift( float( it[0] ) / float( nt[0] ) * vSpacing.x ,
+                                        float( it[1] ) / float( nt[1] ) * vSpacing.y ,
+                                        float( it[2] ) / float( nt[2] ) * vSpacing.z ) ;
+                            pcl.mPosition           = vPosMinCorner + vShift + RandomSpread( noise ) ;
+                            mTracers.push_back( pcl ) ;
+                        }
+            }
+}
+
+
+
+const ofVec3f VortonSim::GetTracerCenterOfMass( void ) const
+{
+    ofVec3f vCoM( 0.0f , 0.0f , 0.0f ) ;
+    const size_t & numTracers = mTracers.size() ;
+    for( size_t iTracer = 0 ; iTracer < numTracers ; ++ iTracer )
+    {
+        const Particle & pcl = mTracers[ iTracer ] ;
+        vCoM += pcl.mPosition ;
+    }
+    vCoM /= float( numTracers ) ;
+    return vCoM ;
+}
+
