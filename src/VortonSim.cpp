@@ -302,3 +302,149 @@ void VortonSim::AggregateClusters( size_t uParentLayer )
         }
     }
 }
+
+/*! \brief Create nested grid vorticity influence tree
+ 
+ Each layer of this tree represents a simplified, aggregated version of
+ all of the information in its "child" layer, where each
+ "child" has higher resolution than its "parent".
+ 
+ \see MakeBaseVortonGrid, AggregateClusters
+ 
+ Derivation:
+ 
+ Using conservation properties, I_0 = I_0' , I_1 = I_1' , I_2 = I_2'
+ 
+ I_0 : wx d = w1x d1 + w2x d2
+ : wy d = w1y d1 + w2y d2
+ : wz d = w1z d1 + w2z d2
+ 
+ These 3 are not linearly independent:
+ I_1 : ( y wz - z wy ) d = ( y1 wz1 - z1 wy1 ) d1 + ( y2 wz2 - z2 wy2 ) d2
+ : ( z wx - x wz ) d = ( z1 wx1 - x1 wz1 ) d1 + ( z2 wx2 - x2 wz2 ) d2
+ : ( x wy - y wx ) d = ( x1 wy1 - y1 wx1 ) d1 + ( x2 wy2 - y2 wx2 ) d2
+ 
+ I_2 : ( x^2 + y^2 + z^2 ) wx d = (x1^2 + y1^2 + z1^2 ) wx1 d1 + ( x2^2 + y2^2 + z2^2 ) wx2 d2
+ : ( x^2 + y^2 + z^2 ) wy d = (x1^2 + y1^2 + z1^2 ) wy1 d1 + ( x2^2 + y2^2 + z2^2 ) wy2 d2
+ : ( x^2 + y^2 + z^2 ) wz d = (x1^2 + y1^2 + z1^2 ) wz1 d1 + ( x2^2 + y2^2 + z2^2 ) wz2 d2
+ 
+ Can replace I_2 with its magnitude:
+ ( x^2  + y^2  + z^2  ) ( wx^2  + wy^2  + wz^2  )^(1/2) d
+ = ( x1^2 + y1^2 + z1^2 ) ( wx1^2 + w1y^2 + w1z^2 )^(1/2) d1
+ + ( x2^2 + y2^2 + z2^2 ) ( wx2^2 + w2y^2 + w2z^2 )^(1/2) d2
+ 
+ */
+void VortonSim::CreateInfluenceTree( void )
+{
+//    QUERY_PERFORMANCE_ENTER ;
+    FindBoundingBox() ; // Find axis-aligned bounding box that encloses all vortons.
+//    QUERY_PERFORMANCE_EXIT( VortonSim_CreateInfluenceTree_FindBoundingBox ) ;
+    
+    // Create skeletal nested grid for influence tree.
+    const size_t numVortons = mVortons.Size() ;
+    {
+        UniformGrid< Vorton >   ugSkeleton ;   ///< Uniform grid with the same size & shape as the one holding aggregated information about mVortons.
+        ugSkeleton.DefineShape( numVortons , mMinCorner , mMaxCorner , true ) ;
+        mInfluenceTree.Initialize( ugSkeleton ) ; // Create skeleton of influence tree.
+    }
+    
+//    QUERY_PERFORMANCE_ENTER ;
+    MakeBaseVortonGrid() ;
+//    QUERY_PERFORMANCE_EXIT( VortonSim_CreateInfluenceTree_MakeBaseVortonGrid ) ;
+    
+//    QUERY_PERFORMANCE_ENTER ;
+    const size_t numLayers = mInfluenceTree.GetDepth() ;
+    for( size_t int uParentLayer = 1 ; uParentLayer < numLayers ; ++ uParentLayer )
+    {   // For each layer in the influence tree...
+        AggregateClusters( uParentLayer ) ;
+    }
+//    QUERY_PERFORMANCE_EXIT( VortonSim_CreateInfluenceTree_AggregateClusters ) ;
+}
+
+
+
+
+/*! \brief Compute velocity at a given point in space, due to influence of vortons
+ 
+ \param vPosition - point in space whose velocity to evaluate
+ 
+ \param indices - indices of cell to visit in the given layer
+ 
+ \param iLayer - which layer to process
+ 
+ \return velocity at vPosition, due to influence of vortons
+ 
+ \note This is a recursive algorithm with time complexity O(log(N)).
+ The outermost caller should pass in mInfluenceTree.GetDepth().
+ 
+ */
+ofVec3f VortonSim::ComputeVelocity( const ofVec3f & vPosition , const size_t indices[3] , size_t iLayer )
+{
+    UniformGrid< Vorton > & rChildLayer             = mInfluenceTree[ iLayer - 1 ] ;
+    size_t                clusterMinIndices[3] ;
+    const size_t *        pClusterDims             = mInfluenceTree.GetDecimations( iLayer ) ;
+    mInfluenceTree.GetChildClusterMinCornerIndex( clusterMinIndices , pClusterDims , indices ) ;
+    
+    const ofVec3f &            vGridMinCorner          = rChildLayer.GetMinCorner() ;
+    const ofVec3f              vSpacing                = rChildLayer.GetCellSpacing() ;
+    size_t                increment[3]            ;
+    const size_t &        numXchild               = rChildLayer.GetNumPoints( 0 ) ;
+    const size_t          numXYchild              = numXchild * rChildLayer.GetNumPoints( 1 ) ;
+    ofVec3f                    velocityAccumulator( 0.0f , 0.0f , 0.0f ) ;
+    
+    // The larger this is, the more accurate (and slower) the evaluation.
+    // Reasonable values lie in [0.00001,4.0].
+    // Setting this to 0 leads to very bad errors, but values greater than (tiny) lead to drastic improvements.
+    // Changes in margin have a quantized effect since they effectively indicate how many additional
+    // cluster subdivisions to visit.
+    static const float  marginFactor    = 0.0001f ; // 0.4f ; // ship with this number: 0.0001f ; test with 0.4
+                                                    // When domain is 2D in XY plane, min.z==max.z so vPos.z test below would fail unless margin.z!=0.
+    const ofVec3f          margin          = marginFactor * vSpacing + ( 0.0f == vSpacing.z ? ofVec3f(0,0,FLT_MIN) : ofVec3f(0,0,0) );
+    
+    // For each cell of child layer in this grid cluster...
+    for( increment[2] = 0 ; increment[2] < pClusterDims[2] ; ++ increment[2] )
+    {
+        size_t idxChild[3] ;
+        idxChild[2] = clusterMinIndices[2] + increment[2] ;
+        ofVec3f vCellMinCorner , vCellMaxCorner ;
+        vCellMinCorner.z = vGridMinCorner.z + float( idxChild[2]     ) * vSpacing.z ;
+        vCellMaxCorner.z = vGridMinCorner.z + float( idxChild[2] + 1 ) * vSpacing.z ;
+        const size_t offsetZ = idxChild[2] * numXYchild ;
+        for( increment[1] = 0 ; increment[1] < pClusterDims[1] ; ++ increment[1] )
+        {
+            idxChild[1] = clusterMinIndices[1] + increment[1] ;
+            vCellMinCorner.y = vGridMinCorner.y + float( idxChild[1]     ) * vSpacing.y ;
+            vCellMaxCorner.y = vGridMinCorner.y + float( idxChild[1] + 1 ) * vSpacing.y ;
+            const size_t offsetYZ = idxChild[1] * numXchild + offsetZ ;
+            for( increment[0] = 0 ; increment[0] < pClusterDims[0] ; ++ increment[0] )
+            {
+                idxChild[0] = clusterMinIndices[0] + increment[0] ;
+                vCellMinCorner.x = vGridMinCorner.x + float( idxChild[0]     ) * vSpacing.x ;
+                vCellMaxCorner.x = vGridMinCorner.x + float( idxChild[0] + 1 ) * vSpacing.x ;
+                if(
+                   ( iLayer > 1 )
+                   &&  ( vPosition.x >= vCellMinCorner.x - margin.x )
+                   &&  ( vPosition.y >= vCellMinCorner.y - margin.y )
+                   &&  ( vPosition.z >= vCellMinCorner.z - margin.z )
+                   &&  ( vPosition.x <  vCellMaxCorner.x + margin.x )
+                   &&  ( vPosition.y <  vCellMaxCorner.y + margin.y )
+                   &&  ( vPosition.z <  vCellMaxCorner.z + margin.z )
+                   )
+                {   // Test position is inside childCell and currentLayer > 0...
+                    // Recurse child layer.
+                    velocityAccumulator += ComputeVelocity( vPosition , idxChild , iLayer - 1 ) ;
+                }
+                else
+                {   // Test position is outside childCell, or reached leaf node.
+                    //    Compute velocity induced by cell at corner point x.
+                    //    Accumulate influence, storing in velocityAccumulator.
+                    const size_t  offsetXYZ       = idxChild[0] + offsetYZ ;
+                    const Vorton &  rVortonChild    = rChildLayer[ offsetXYZ ] ;
+                    VORTON_ACCUMULATE_VELOCITY( velocityAccumulator , vPosition , rVortonChild ) ;
+                }
+            }
+        }
+    }
+    
+    return velocityAccumulator ;
+}
