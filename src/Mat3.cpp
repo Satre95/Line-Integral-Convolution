@@ -81,6 +81,7 @@ void Mat3::operator-=(const Mat3 &B) {
 //TODO: Optimize with SIMD intrinsics
 Mat3 Mat3::operator*(float scalar) const {
     Mat3 result;
+#pragma omp parallel for
     for (size_t i = 0; i < 3; i++)
         for (size_t j = 0; j < 3; j++)
             result(j, i) = Get(j, i) * scalar;
@@ -89,6 +90,7 @@ Mat3 Mat3::operator*(float scalar) const {
 }
 
 void Mat3::operator*=(const Mat3 &B) {
+    
     
 }
 

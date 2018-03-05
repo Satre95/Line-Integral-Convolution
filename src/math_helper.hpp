@@ -1,4 +1,6 @@
 #pragma once
+#include "Rand.hpp"
+#include "ofVec3f.h"
 
 // A set of helper math functions such as fast inverse sqrt, etc.
 
@@ -65,4 +67,18 @@ inline unsigned int NearestPowerOfTwoExponent( unsigned int iVal )
 inline unsigned int NearestPowerOfTwo( unsigned int iVal )
 {
     return 1 << NearestPowerOfTwoExponent( iVal ) ;
+}
+
+/*! \brief Generate a random 3D vector in the given range.
+    \param range Each component will be in [-range/2, range/2).
+ 
+    \note range components must be positive.
+ */
+inline ofVec3f RandomSpread(ofVec3f range) {
+    static bool firstRun = true;
+    if(firstRun) { Rand::randomize(); firstRun = false;}
+    
+    return ofVec3f(
+    
+    );
 }

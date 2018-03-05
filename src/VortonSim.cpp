@@ -3,6 +3,9 @@
 #include"UniformGridMath.hpp"
 #include "Mat3.hpp"
 
+std::mt19937 Rand::sBase( time(nullptr) );
+std::uniform_real_distribution<float> Rand::sFloatGen;
+
 /*! \brief Update axis-aligned bounding box corners to include given point
 
  \param vMinCorner - minimal corner of axis-aligned bounding box
@@ -942,7 +945,7 @@ void VortonSim::InitializePassiveTracers( size_t multiplier )
                             ofVec3f vShift( float( it[0] ) / float( nt[0] ) * vSpacing.x ,
                                         float( it[1] ) / float( nt[1] ) * vSpacing.y ,
                                         float( it[2] ) / float( nt[2] ) * vSpacing.z ) ;
-                            pcl.mPosition           = vPosMinCorner + vShift + RandomSpread( noise ) ;
+                            pcl.mPosition           = vPosMinCorner + vShift + RandomSpread(noise) ;
                             mTracers.push_back( pcl ) ;
                         }
             }
