@@ -31,7 +31,7 @@ public:
 	Mat3 operator*(float scalar) const;
 
 	/// \brief Multiply a matrix by a matrix this = this*B (in that order)
-	void operator*=(const Mat3& B);
+	//void operator*=(const Mat3& B);
 
 	/// \brief Multiply a matrix by a scalar (multiples all entries by scalar)
 	void operator*=(float scalar);

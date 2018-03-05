@@ -12,7 +12,8 @@ public:
 	typedef UniformGrid<TypeT> Layer;
 
 	NestedGrid();
-	NestedGrid(const Layer & src);
+	explicit NestedGrid(const Layer & src);
+	NestedGrid(const NestedGrid & other) = delete;
 	~NestedGrid();
 
 	void Initialize(const Layer & src);
@@ -149,12 +150,12 @@ void NestedGrid<TypeT>::Initialize(const Layer & src) {
 template <class TypeT>
 void NestedGrid<TypeT>::AddLayer(const UniformGridGeometry & layerTemplate, size_t iDecimation) {
 	mLayers.emplace_back();
-	mLayers.back().Decimate(layerTemplate, iDecimation);
+	mLayers.back().Decimate(layerTemplate, (int)iDecimation);
 	mLayers.back().Init();
 }
 
 template <class TypeT>
-void NestedGrid<TypeT>::GetChildClusterMinCornerIndex(size_t *clusterMinIndices, const size_t *decimations, const size_t *indicesOfParentCell) {
+void NestedGrid<TypeT>::GetChildClusterMinCornerIndex(size_t clusterMinIndices[3], const size_t decimations[3], const size_t indicesOfParentCell[3]) {
 	clusterMinIndices[0] = indicesOfParentCell[0] * decimations[0];
 	clusterMinIndices[1] = indicesOfParentCell[1] * decimations[1];
 	clusterMinIndices[2] = indicesOfParentCell[2] * decimations[2];

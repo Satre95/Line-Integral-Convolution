@@ -13,9 +13,6 @@ public:
 		: mBase(seed), mHaveNextNextGaussian(false)
 	{}
 
-	//! Re-seeds the random generator
-	void seed(uint32_t seedValue);
-
 	//! returns a random boolean value
 	bool nextBool()
 	{
