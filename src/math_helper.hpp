@@ -75,10 +75,9 @@ inline unsigned int NearestPowerOfTwo( unsigned int iVal )
     \note range components must be positive.
  */
 inline ofVec3f RandomSpread(ofVec3f range) {
-    static bool firstRun = true;
-    if(firstRun) { Rand::randomize(); firstRun = false;}
-    
     return ofVec3f(
-    
+                   Rand::randFloat(-range.x / 2.f, range.x / 2.f),
+                   Rand::randFloat(-range.y / 2.f, range.y / 2.f),
+                   Rand::randFloat(-range.z / 2.f, range.z / 2.f)
     );
 }

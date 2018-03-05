@@ -3,9 +3,6 @@
 #include"UniformGridMath.hpp"
 #include "Mat3.hpp"
 
-std::mt19937 Rand::sBase( time(nullptr) );
-std::uniform_real_distribution<float> Rand::sFloatGen;
-
 /*! \brief Update axis-aligned bounding box corners to include given point
 
  \param vMinCorner - minimal corner of axis-aligned bounding box

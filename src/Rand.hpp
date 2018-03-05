@@ -115,8 +115,6 @@ public:
         sFloatGen = std::uniform_real_distribution<float>();
     }
     
-    //! Resets the static random generator to the specific seed \a seedValue
-    static void    randSeed( uint32_t seedValue );
     
     //! returns a random boolean value
     static bool randBool()
