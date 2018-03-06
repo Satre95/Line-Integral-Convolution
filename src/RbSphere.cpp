@@ -1,10 +1,10 @@
-#include "SphereRigidBody.hpp"
+#include "RbSphere.hpp"
 
-SphereRigidBody::SphereRigidBody() :
+RbSphere::RbSphere() :
 RigidBody(), mRadius(0.f)
 {}
 
-SphereRigidBody::SphereRigidBody( const ofVec3f & vPos , const ofVec3f & vVelocity , const float & fMass , const float & fRadius ) :
+RbSphere::RbSphere( const ofVec3f & vPos , const ofVec3f & vVelocity , const float & fMass , const float & fRadius ) :
 RigidBody(vPos, vVelocity, fMass), mRadius(fRadius)
 {
     // Moments of inertia for a sphere are 2 M R^2 / 5.
