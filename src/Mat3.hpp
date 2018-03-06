@@ -30,6 +30,9 @@ public:
 
 	/// \brief Multiply a matrix with a scalar
 	Mat3 operator*(float scalar) const;
+    
+    /// \brief Divide a matrix by a scalar;
+    Mat3 operator/(float scalar) const;
 
 	/// \brief Multiply a matrix by a matrix this = this*B (in that order)
 	//void operator*=(const Mat3& B);

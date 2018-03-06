@@ -1,7 +1,5 @@
 #include "RigidBody.hpp"
 
-/*! \brief Construct a rigid body
- */
 RigidBody::RigidBody()
 : mPosition( 0.0f , 0.0f , 0.0f )
 , mVelocity( 0.0f , 0.0f , 0.0f )

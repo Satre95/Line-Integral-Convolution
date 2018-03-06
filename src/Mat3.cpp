@@ -90,6 +90,10 @@ Mat3 Mat3::operator*(float scalar) const {
 	return result;
 }
 
+Mat3 Mat3::operator/(float scalar) const {
+    return (*this) * 1.f / scalar;
+}
+
 //TODO: Optimize with SIMD intrinsics
 void Mat3::operator*=(float scalar) {
 	for (size_t i = 0; i < 3; i++)
