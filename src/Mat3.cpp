@@ -1,5 +1,7 @@
 #include "Mat3.hpp"
 
+const Mat3 Mat3::sIdentity = Mat3();
+
 const float & Mat3::operator()(size_t row, size_t col) const {
 	return Get(row, col);
 }

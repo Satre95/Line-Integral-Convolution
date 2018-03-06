@@ -9,6 +9,7 @@ public:
 	Mat3() {
 		Get(0, 0) = 1.f; Get(1, 1) = 1.f; Get(2, 2) = 1.f;
 	}
+    Mat3(const Mat3 & other):mData(other.mData) {}
 
 	const float & operator()(size_t row, size_t col) const;
 	float & operator()(size_t row, size_t col);
@@ -38,6 +39,8 @@ public:
 
 	/// \brief Multiply this matrix with a vector and return a a vector.
 	ofVec3f operator*(const ofVec3f & vec) const;
+    
+    static const Mat3 sIdentity;
 
 private:
 	const float & Get(size_t row, size_t col) const;
