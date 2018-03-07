@@ -2,6 +2,8 @@
 
 #include <vector>
 #include "VortonSim.hpp"
+#include "RbSphere.hpp"
+
 class FluidSim
 {
 public:
@@ -13,13 +15,12 @@ public:
 	void                    Initialize(size_t numTracersPerCellCubeRoot);
 	void                    Update(float timeStep, size_t uFrame);
 	VortonSim &             GetVortonSim() { return mVortonSim; }
-	void                    Clear() {
-		mVortonSim.Clear();
-	}
+	void                    Clear() { mVortonSim.Clear(); }
 
 private:
 	void RemoveEmbeddedParticles();
 	void SolveBoundaryConditions();
 
-	VortonSim           mVortonSim;
+	VortonSim               mVortonSim;
+    std::vector<RbSphere>   mSpheres;
 };

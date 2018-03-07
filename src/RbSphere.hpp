@@ -8,6 +8,5 @@ public:
     
     static void UpdateSystem( std::vector< RbSphere > & rbSpheres , float timeStep , size_t uFrame ) ;
 
-private:
     float mRadius;
 };

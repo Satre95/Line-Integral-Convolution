@@ -33,7 +33,7 @@ public:
     /*! \brief Kill the tracer at the given index
      */
     void KillTracer( size_t iTracer ) {
-        mTracers[ iTracer ] = mTracers[ mTracers.size() - 1 ] ;
+        mTracers.at(iTracer) = mTracers.at( mTracers.size() - 1 ) ;
         mTracers.pop_back() ;
     }
     
