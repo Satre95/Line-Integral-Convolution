@@ -91,7 +91,13 @@ Mat3 Mat3::operator*(float scalar) const {
 }
 
 Mat3 Mat3::operator/(float scalar) const {
-    return (*this) * 1.f / scalar;
+    Mat3 result;
+#pragma omp parallel for
+    for (size_t i = 0; i < 3; i++)
+        for (size_t j = 0; j < 3; j++)
+            result(j, i) = Get(j, i) / scalar;
+    
+    return result;
 }
 
 //TODO: Optimize with SIMD intrinsics
