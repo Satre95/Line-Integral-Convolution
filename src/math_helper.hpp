@@ -81,3 +81,8 @@ inline ofVec3f RandomSpread(ofVec3f range) {
                    Rand::randFloat(-range.z / 2.f, range.z / 2.f)
     );
 }
+
+/// \brief Helper function to compute cross product of two vectors
+inline ofVec3f operator^(const ofVec3f & lhs, const ofVec3f & rhs) {
+    return lhs.getCrossed(rhs);
+}
