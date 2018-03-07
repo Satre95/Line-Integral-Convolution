@@ -2,9 +2,7 @@
 #include <memory>
 
 #include "ofMain.h"
-#include "FluidSim.hpp"
-
-typedef std::unique_ptr<FluidSim> FluidSimRef;
+#include "ofEasyCam.h"
 
 class ofApp : public ofBaseApp{
 public:
@@ -28,5 +26,5 @@ public:
     float mDensity = 1.0f;
     
 private:
-    FluidSimRef mFluidSim;
+    ofEasyCam mCamera;
 };
