@@ -11,3 +11,8 @@ RigidBody(vPos, vVelocity, fMass), mRadius(fRadius)
     mInertiaInv = Mat3::sIdentity * 5.0f * mInverseMass / ( 2.0f * fRadius * fRadius ) ;
 }
 
+/* static */void RbSphere::UpdateSystem(std::vector<RbSphere> &rbSpheres, float timeStep, size_t uFrame) {
+    for(auto & aSphere: rbSpheres)
+        aSphere.Update(timeStep);
+}
+
