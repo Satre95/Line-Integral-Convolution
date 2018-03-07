@@ -120,7 +120,7 @@ private:
 };
 
 template <class TypeT>
-NestedGrid<TypeT>::NestedGrid() {}
+NestedGrid<TypeT>::NestedGrid() { mDecimations.fill(nullptr); }
 
 template <class TypeT>
 NestedGrid<TypeT>::NestedGrid(const Layer & src) {
@@ -208,9 +208,9 @@ void NestedGrid<TypeT>::PrecomputeDecimations() {
 	// Precompute decimations for each layer.
 	for (size_t iLayer = 1; iLayer < numLayers; ++iLayer)
 	{   // For each parent layer...
-		ComputeDecimations(mDecimations[iLayer], iLayer);
+		ComputeDecimations(mDecimations.at(iLayer), iLayer);
 	}
 	// Layer 0 is strictly a child (i.e. has no children), so has no decimations.
 	// Assign the values with useless nonsense to make this more obvious.
-	mDecimations[0][0] = mDecimations[0][1] = mDecimations[0][2] = 0;
+	mDecimations.at(0)[0] = mDecimations.at(0)[1] = mDecimations.at(0)[2] = 0;
 }

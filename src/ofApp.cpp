@@ -1,8 +1,8 @@
 #include "ofApp.h"
 
 //--------------------------------------------------------------
-void ofApp::setup(){
-
+void ofApp::setup() {
+    mFluidSim = std::make_unique<FluidSim>(mViscosity, mDensity);
 }
 
 //--------------------------------------------------------------
