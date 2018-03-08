@@ -54,7 +54,7 @@ void AssignVorticity( std::vector<Vorton> & vortons , float fMagnitude , size_t 
     }
     const ofVec3f  vNoise          ( 0.0f * gridCellSize ) ;
     
-    ofVec3f position = ofVec3f( 0.0f , 0.0f , 0.0f ) ;                              // vorton position
+    ofVec3f position = ofVec3f( 0.0f , 0.0f , 0.0f ) ; // vorton position
     size_t index[3];   // index of each position visited
                        // Iterate through each point in a uniform grid.
                        // If probe position is inside vortex core, add a vorton there.
