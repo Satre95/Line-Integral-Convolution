@@ -3,6 +3,7 @@
 
 #include "ofMain.h"
 #include "ofEasyCam.h"
+#include "FluidRenderer.hpp"
 
 class ofApp : public ofBaseApp{
 public:
@@ -27,4 +28,5 @@ public:
     
 private:
     ofEasyCam mCamera;
+    FluidRenderer mFluidRenderer;
 };

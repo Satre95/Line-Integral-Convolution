@@ -6,14 +6,17 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update(){
-
+    auto delta_t = ofGetElapsedTimef() - ofGetLastFrameTime();
+    auto frameNum = ofGetFrameNum();
+    mFluidRenderer.Update(delta_t, frameNum);
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+    ofEnableDepthTest();
     mCamera.begin();
     {
-        ofDrawRectangle(-100, -100, 200, 200);
+        mFluidRenderer.Draw();
     }
     mCamera.end();
 }
