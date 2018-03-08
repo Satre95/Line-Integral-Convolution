@@ -21,7 +21,7 @@ public:
 	size_t GetDepth() const { return mLayers.size(); }
 	Layer & operator[](size_t index) { return mLayers.at(index); }
 	const Layer & operator[](size_t index) const { return mLayers.at(index); }
-	const size_t * GetDecimations(size_t iParentLayer) const { return mDecimations.at(iParentLayer); }
+	const size_t * GetDecimations(size_t iParentLayer) const { return mDecimations[iParentLayer]; }
 
 	/*! \brief Get indices of minimal cell in child layer of cluster represented by specified cell in parent layer.
 
@@ -116,11 +116,11 @@ private:
 	/// Dynamic array of uniform grids
 	std::vector<Layer> mLayers;
 	/// Cache of cluster sizes.
-	std::array<size_t*, 3> mDecimations;
+    size_t     (* mDecimations)[3];
 };
 
 template <class TypeT>
-NestedGrid<TypeT>::NestedGrid() { mDecimations.fill(nullptr); }
+NestedGrid<TypeT>::NestedGrid(): mDecimations(0) { }
 
 template <class TypeT>
 NestedGrid<TypeT>::NestedGrid(const Layer & src) {
@@ -128,7 +128,7 @@ NestedGrid<TypeT>::NestedGrid(const Layer & src) {
 
 template <class TypeT>
 NestedGrid<TypeT>::~NestedGrid() {
-	for (size_t *& aDecimation : mDecimations) delete[] aDecimation;
+	delete[] mDecimations;
 }
 
 template <class TypeT>
@@ -198,19 +198,17 @@ void NestedGrid<TypeT>::ComputeDecimations(size_t decimations[3], size_t iParent
 
 template <class TypeT>
 void NestedGrid<TypeT>::PrecomputeDecimations() {
-	const size_t numLayers = GetDepth();
-
-	for (auto *& aDec : mDecimations) {
-		delete[] aDec;
-		aDec = new size_t[numLayers];
-	}
-
-	// Precompute decimations for each layer.
-	for (size_t iLayer = 1; iLayer < numLayers; ++iLayer)
-	{   // For each parent layer...
-		ComputeDecimations(mDecimations.at(iLayer), iLayer);
-	}
-	// Layer 0 is strictly a child (i.e. has no children), so has no decimations.
-	// Assign the values with useless nonsense to make this more obvious.
-	mDecimations.at(0)[0] = mDecimations.at(0)[1] = mDecimations.at(0)[2] = 0;
+    const size_t numLayers = GetDepth() ;
+    
+    delete [] mDecimations ;    // Delete old decimations array
+    
+    // Precompute decimations for each layer.
+    mDecimations = new size_t[ numLayers ][3] ;
+    for( unsigned iLayer = 1 ; iLayer < numLayers ; ++ iLayer )
+    {   // For each parent layer...
+        ComputeDecimations( mDecimations[ iLayer ] , iLayer ) ;
+    }
+    // Layer 0 is strictly a child (i.e. has no children), so has no decimations.
+    // Assign the values with useless nonsense to make this more obvious.
+    mDecimations[0][0] = mDecimations[0][1] = mDecimations[0][2] = 0 ;
 }

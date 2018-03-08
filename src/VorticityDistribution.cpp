@@ -2,8 +2,7 @@
 #include "ofConstants.h"
 #include "math_helper.hpp"
 
-/*! \brief A very small number, between FLT_EPSILON and FLT_MIN.
- */
+/// \brief A very small number, between FLT_EPSILON and FLT_MIN.
 static const float sTiny = expf( 0.5f * ( logf( FLT_EPSILON ) + logf( FLT_MIN ) ) ) ;
 
 void VortexSheet::AssignVorticity(ofVec3f &vorticity, const ofVec3f &position, const ofVec3f &vCenter) const {
