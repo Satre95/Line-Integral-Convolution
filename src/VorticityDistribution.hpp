@@ -1,5 +1,10 @@
 #pragma once
+#include <vector>
+#include <algorithm>
+
 #include "ofVec3f.h"
+#include "Vorton.hpp"
+#include "UniformGrid.hpp"
 
 /// \brief Abstract base class for various vortex distros
 class VorticityDistribution {
@@ -35,3 +40,6 @@ public:
     float   mVariation  ;
     float   mWidth      ;
 };
+
+/// \brief Global generic fn to create a vortex field based on a vorticity distribution.
+extern void AssignVorticity( std::vector<Vorton> & vortons , float fMagnitude , size_t numVortonsMax , const VorticityDistribution & vorticityDistribution ) ;
