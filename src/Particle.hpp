@@ -17,9 +17,9 @@ public:
 	
 	ofVec3f    mPosition	        ;   ///< Position (in world units) of center of particle
     ofVec3f    mVelocity	        ;   ///< Velocity of particle
-    ofVec3f    mOrientation	    ;   ///< Orientation of particle, in axis-angle form where angle=|orientation|
-    ofVec3f    mAngularVelocity	;   ///< Angular velocity of particle
-    float	mMass               	;   ///< Mass of particle
-    float	mSize		        	;   ///< Size of particle
-    int     mBirthTime          	;   ///< Birth time of particle, in "ticks"
+    ofVec3f    mOrientation	        ;   ///< Orientation of particle, in axis-angle form where angle=|orientation|
+    ofVec3f    mAngularVelocity	    ;   ///< Angular velocity of particle
+    float	   mMass               	;   ///< Mass of particle
+    float	   mSize		        ;   ///< Size of particle
+    int        mBirthTime          	;   ///< Birth time of particle, in "ticks"
 };

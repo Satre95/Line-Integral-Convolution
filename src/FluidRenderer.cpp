@@ -16,16 +16,19 @@ FluidRenderer::FluidRenderer() {
     mVbo->setVertexBuffer(*mBuf, 3, sizeof(Particle));
     
     auto & vortons = mFluidSim->GetVortonSim().GetVortons();
-    static const float      fRadius         = 1.0f ;
-    static const float      fThickness      = 1.0f ;
+    static const float      fRadius         = 10.0f ;
+    static const float      fThickness      = 10.0f ;
     static const float      fMagnitude      = 20.0f ;
     static const size_t     numCellsPerDim  = 16 ;
     static const size_t     numVortonsMax   = numCellsPerDim * numCellsPerDim * numCellsPerDim ;
-    unsigned                numTracersPer   = 3 ;
+    unsigned                numTracersPer   = 10 ;
     
     // Vortex sheet with spanwise variation
-    AssignVorticity(vortons, fMagnitude, numVortonsMax, VortexSheet( fThickness , /* variation */ 0.2f , /* width */ 7.0f * fThickness ));
+//    AssignVorticity(vortons, fMagnitude, numVortonsMax, VortexSheet( fThickness , /* variation */ 0.2f , /* width */ 7.0f * fThickness ));
     
+    // 2D sheet
+    AssignVorticity( vortons , fMagnitude , numVortonsMax , VortexSheet( fThickness , /* variation */ 0.0f , /* width */ 2.0f * fThickness ) ) ;
+
     mFluidSim->Initialize(numTracersPer);
 }
 
