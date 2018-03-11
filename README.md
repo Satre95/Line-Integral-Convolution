@@ -1,3 +1,3 @@
 # Vortex-Simulation
 
-An particle simulation in 2D/3D space with vortices.
+A fluid simulation based on simulating vorticity which is very suitable for highly turbulent fluids.Interaction with simple rigid bodies is also supported.
