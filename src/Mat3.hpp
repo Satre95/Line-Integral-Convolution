@@ -9,7 +9,7 @@ public:
 	Mat3() {
 		Get(0, 0) = 1.f; Get(1, 1) = 1.f; Get(2, 2) = 1.f;
 	}
-    Mat3(const Mat3 & other):mData(other.mData) {}
+	Mat3(const Mat3 & other) :mData(other.mData) {}
 
 	const float & operator()(size_t row, size_t col) const;
 	float & operator()(size_t row, size_t col);
@@ -30,9 +30,9 @@ public:
 
 	/// \brief Multiply a matrix with a scalar
 	Mat3 operator*(float scalar) const;
-    
-    /// \brief Divide a matrix by a scalar;
-    Mat3 operator/(float scalar) const;
+
+	/// \brief Divide a matrix by a scalar;
+	Mat3 operator/(float scalar) const;
 
 	/// \brief Multiply a matrix by a matrix this = this*B (in that order)
 	//void operator*=(const Mat3& B);
@@ -42,8 +42,8 @@ public:
 
 	/// \brief Multiply this matrix with a vector and return a a vector.
 	ofVec3f operator*(const ofVec3f & vec) const;
-    
-    static const Mat3 sIdentity;
+
+	static const Mat3 sIdentity;
 
 private:
 	const float & Get(size_t row, size_t col) const;
@@ -66,8 +66,8 @@ private:
 inline Mat3 operator*(const float & scalar, const Mat3 & mat) {
 	Mat3 result;
 #pragma omp parallel for
-	for (size_t i = 0; i < 3; i++)
-		for (size_t j = 0; j < 3; j++)
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)
 			result(j, i) = mat(j, i) * scalar;
 
 	return result;

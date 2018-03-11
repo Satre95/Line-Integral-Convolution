@@ -792,7 +792,7 @@ void VortonSim::AdvectVortons(const float & timeStep)
 {
 	const size_t numVortons = mVortons.size();
 #pragma omp parallel for
-	for (size_t offset = 0; offset < numVortons; ++offset)
+	for (int offset = 0; offset < numVortons; ++offset)
 	{   // For each vorton...
 		Vorton & rVorton = mVortons[offset];
 		ofVec3f velocity;
