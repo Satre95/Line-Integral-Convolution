@@ -81,33 +81,7 @@ public:
 		\return Interpolated value corresponding to value of grid contents at vPosition.
 
 	*/
-	void Interpolate(TypeT &vResult, const ofVec3f &vPosition) const {
-		//TODO: Replace with std::tuple refs to avoid unnecessary copies.
-		size_t        indices[3]; // Indices of grid cell containing position.
-		Parent::IndicesOfPosition(indices, vPosition);
-		ofVec3f            vMinCorner;
-		Parent::PositionFromIndices(vMinCorner, indices);
-		const size_t  offsetX0Y0Z0 = OffsetFromIndices(indices);
-		const ofVec3f      vDiff = vPosition - vMinCorner; // Relative location of position within its containing grid cell.
-		const ofVec3f      tween = ofVec3f(vDiff.x * GetCellsPerExtent().x, vDiff.y * GetCellsPerExtent().y, vDiff.z * GetCellsPerExtent().z);
-		const ofVec3f      oneMinusTween = ofVec3f(1.0f, 1.0f, 1.0f) - tween;
-		const size_t  numXY = GetNumPoints(0) * GetNumPoints(1);
-		const size_t  offsetX1Y0Z0 = offsetX0Y0Z0 + 1;
-		const size_t  offsetX0Y1Z0 = offsetX0Y0Z0 + GetNumPoints(0);
-		const size_t  offsetX1Y1Z0 = offsetX0Y0Z0 + GetNumPoints(0) + 1;
-		const size_t  offsetX0Y0Z1 = offsetX0Y0Z0 + numXY;
-		const size_t  offsetX1Y0Z1 = offsetX0Y0Z0 + numXY + 1;
-		const size_t  offsetX0Y1Z1 = offsetX0Y0Z0 + numXY + GetNumPoints(0);
-		const size_t  offsetX1Y1Z1 = offsetX0Y0Z0 + numXY + GetNumPoints(0) + 1;
-		vResult = oneMinusTween.x * oneMinusTween.y * oneMinusTween.z * (*this)[offsetX0Y0Z0]
-			+ tween.x * oneMinusTween.y * oneMinusTween.z * (*this)[offsetX1Y0Z0]
-			+ oneMinusTween.x *         tween.y * oneMinusTween.z * (*this)[offsetX0Y1Z0]
-			+ tween.x *         tween.y * oneMinusTween.z * (*this)[offsetX1Y1Z0]
-			+ oneMinusTween.x * oneMinusTween.y *         tween.z * (*this)[offsetX0Y0Z1]
-			+ tween.x * oneMinusTween.y *         tween.z * (*this)[offsetX1Y0Z1]
-			+ oneMinusTween.x *         tween.y *         tween.z * (*this)[offsetX0Y1Z1]
-			+ tween.x *         tween.y *         tween.z * (*this)[offsetX1Y1Z1];
-	}
+	void Interpolate(TypeT &vResult, const ofVec3f &vPosition) const;
 
 	/// Insert given value into grid at given position
 	void Insert(const ofVec3f & vPosition, const TypeT & item) {
@@ -146,3 +120,36 @@ private:
 	/// 3D array of items.
 	std::vector<TypeT> mContents;
 };
+
+/// Explicit template instantiation for ofVec3f.
+/// \see UniformGrid.cpp
+extern template void UniformGrid<ofVec3f>::Interpolate(ofVec3f & result, const ofVec3f & vPosition) const;
+
+template <class TypeT>
+void UniformGrid<TypeT>::Interpolate(TypeT &vResult, const ofVec3f &vPosition) const {
+	//TODO: Replace with std::tuple refs to avoid unnecessary copies.
+	size_t        indices[3]; // Indices of grid cell containing position.
+	Parent::IndicesOfPosition(indices, vPosition);
+	ofVec3f            vMinCorner;
+	Parent::PositionFromIndices(vMinCorner, indices);
+	const size_t  offsetX0Y0Z0 = OffsetFromIndices(indices);
+	const ofVec3f      vDiff = vPosition - vMinCorner; // Relative location of position within its containing grid cell.
+	const ofVec3f      tween = ofVec3f(vDiff.x * GetCellsPerExtent().x, vDiff.y * GetCellsPerExtent().y, vDiff.z * GetCellsPerExtent().z);
+	const ofVec3f      oneMinusTween = ofVec3f(1.0f, 1.0f, 1.0f) - tween;
+	const size_t  numXY = GetNumPoints(0) * GetNumPoints(1);
+	const size_t  offsetX1Y0Z0 = offsetX0Y0Z0 + 1;
+	const size_t  offsetX0Y1Z0 = offsetX0Y0Z0 + GetNumPoints(0);
+	const size_t  offsetX1Y1Z0 = offsetX0Y0Z0 + GetNumPoints(0) + 1;
+	const size_t  offsetX0Y0Z1 = offsetX0Y0Z0 + numXY;
+	const size_t  offsetX1Y0Z1 = offsetX0Y0Z0 + numXY + 1;
+	const size_t  offsetX0Y1Z1 = offsetX0Y0Z0 + numXY + GetNumPoints(0);
+	const size_t  offsetX1Y1Z1 = offsetX0Y0Z0 + numXY + GetNumPoints(0) + 1;
+	vResult = oneMinusTween.x * oneMinusTween.y * oneMinusTween.z * (*this)[offsetX0Y0Z0]
+		+ tween.x * oneMinusTween.y * oneMinusTween.z * (*this)[offsetX1Y0Z0]
+		+ oneMinusTween.x *         tween.y * oneMinusTween.z * (*this)[offsetX0Y1Z0]
+		+ tween.x *         tween.y * oneMinusTween.z * (*this)[offsetX1Y1Z0]
+		+ oneMinusTween.x * oneMinusTween.y *         tween.z * (*this)[offsetX0Y0Z1]
+		+ tween.x * oneMinusTween.y *         tween.z * (*this)[offsetX1Y0Z1]
+		+ oneMinusTween.x *         tween.y *         tween.z * (*this)[offsetX0Y1Z1]
+		+ tween.x *         tween.y *         tween.z * (*this)[offsetX1Y1Z1];
+}

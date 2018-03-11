@@ -1,4 +1,5 @@
 #include "ofApp.h"
+#include "math_helper.hpp"
 
 //--------------------------------------------------------------
 void ofApp::setup() {
