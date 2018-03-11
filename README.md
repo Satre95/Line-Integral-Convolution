@@ -2,4 +2,4 @@
 
 A fluid simulation based on simulating vorticity which is very suitable for highly turbulent fluids.Interaction with simple rigid bodies is also supported.
 
-Built with [OpenFrameworks](https://www.openframeworks.cc)
+Built with [OpenFrameworks](http://www.openframeworks.cc)
