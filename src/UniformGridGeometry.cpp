@@ -1,6 +1,7 @@
+#include <algorithm>
+#include <tuple>
 #include "UniformGridGeometry.hpp"
 #include "math_helper.hpp"
-#include <algorithm>
 
 void UniformGridGeometry::DefineShape(size_t uNumElements, const ofVec3f & vMin, const ofVec3f & vMax, bool bPowerOf2)
 {

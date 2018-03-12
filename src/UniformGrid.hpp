@@ -127,7 +127,6 @@ extern template void UniformGrid<ofVec3f>::Interpolate(ofVec3f & result, const o
 
 template <class TypeT>
 void UniformGrid<TypeT>::Interpolate(TypeT &vResult, const ofVec3f &vPosition) const {
-	//TODO: Replace with std::tuple refs to avoid unnecessary copies.
 	size_t        indices[3]; // Indices of grid cell containing position.
 	Parent::IndicesOfPosition(indices, vPosition);
 	ofVec3f            vMinCorner;

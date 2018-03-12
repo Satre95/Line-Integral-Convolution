@@ -21,16 +21,6 @@ void UniformGrid<ofVec3f>::Interpolate(ofVec3f & vResult, const ofVec3f & vPosit
 	const size_t  offsetX0Y1Z1 = offsetX0Y0Z0 + numXY + GetNumPoints(0);
 	const size_t  offsetX1Y1Z1 = offsetX0Y0Z0 + numXY + GetNumPoints(0) + 1;
 
-	//vResult =
-	//	oneMinusTween.x * oneMinusTween.y * oneMinusTween.z * (*this)[offsetX0Y0Z0]		//0
-	//	+ tween.x * oneMinusTween.y * oneMinusTween.z * (*this)[offsetX1Y0Z0]			//1
-	//	+ oneMinusTween.x *         tween.y * oneMinusTween.z * (*this)[offsetX0Y1Z0]	//2
-	//	+ tween.x *         tween.y * oneMinusTween.z * (*this)[offsetX1Y1Z0]			//3
-	//	+ oneMinusTween.x * oneMinusTween.y *         tween.z * (*this)[offsetX0Y0Z1]	//4
-	//	+ tween.x * oneMinusTween.y *         tween.z * (*this)[offsetX1Y0Z1]			//5
-	//	+ oneMinusTween.x *         tween.y *         tween.z * (*this)[offsetX0Y1Z1]	//6
-	//	+ tween.x *         tween.y *         tween.z * (*this)[offsetX1Y1Z1];			//7
-
 	__m128 param0 = LoadVec3(hMultiply(oneMinusTween) * (*this)[offsetX0Y0Z0]);
 	__m128 param1 = LoadVec3(tween.x * oneMinusTween.y * oneMinusTween.z * (*this)[offsetX1Y0Z0]);
 	__m128 param2 = LoadVec3(oneMinusTween.x * tween.y * oneMinusTween.z * (*this)[offsetX0Y1Z0]);
@@ -40,15 +30,13 @@ void UniformGrid<ofVec3f>::Interpolate(ofVec3f & vResult, const ofVec3f & vPosit
 	__m128 param6 = LoadVec3(oneMinusTween.x * tween.y * tween.z * (*this)[offsetX0Y1Z1]);
 	__m128 param7 = LoadVec3(tween.x * tween.y * tween.z * (*this)[offsetX1Y1Z1]);
 
-	__m128 result = _mm_setzero_ps();
-	result = _mm_add_ps(result, param0);
-	result = _mm_add_ps(result, param1);
-	result = _mm_add_ps(result, param2);
-	result = _mm_add_ps(result, param3);
-	result = _mm_add_ps(result, param4);
-	result = _mm_add_ps(result, param5);
-	result = _mm_add_ps(result, param6);
-	result = _mm_add_ps(result, param7);
+	param0 = _mm_add_ps(param0, param1);
+	param0 = _mm_add_ps(param0, param2);
+	param0 = _mm_add_ps(param0, param3);
+	param0 = _mm_add_ps(param0, param4);
+	param0 = _mm_add_ps(param0, param5);
+	param0 = _mm_add_ps(param0, param6);
+	param0 = _mm_add_ps(param0, param7);
 
-	vResult = StoreVec3(result);
+	vResult = StoreVec3(param0);
 }
