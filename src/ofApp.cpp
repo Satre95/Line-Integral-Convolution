@@ -5,8 +5,8 @@
 void ofApp::setup() {
 	ofSetVerticalSync(true);
 	ofEnableDepthTest();
-	mCamera.setTarget(ofVec3f(0.f, 1.f, 0.f));
-	mCamera.setDistance(12.f);
+	mCamera.setTarget(ofVec3f(10.f, 1.f, 0.f));
+	mCamera.setDistance(28.f);
 	mCamera.setNearClip(0.01f);
 	mCamera.setFarClip(1000.f);
 }
@@ -30,6 +30,7 @@ void ofApp::draw() {
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key) {
+    mFluidRenderer.KeyPressed(key);
 }
 
 //--------------------------------------------------------------
