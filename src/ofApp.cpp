@@ -3,8 +3,12 @@
 
 //--------------------------------------------------------------
 void ofApp::setup() {
-	mCamera.setPosition(0, 100.f, 0.f);
+	ofSetVerticalSync(true);
 	ofEnableDepthTest();
+	mCamera.setTarget(ofVec3f(0.f, 1.f, 0.f));
+	mCamera.setDistance(12.f);
+	mCamera.setNearClip(0.01f);
+	mCamera.setFarClip(1000.f);
 }
 
 //--------------------------------------------------------------
