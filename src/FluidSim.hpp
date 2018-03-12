@@ -16,6 +16,7 @@ public:
 	void                    Update(float timeStep, size_t uFrame);
 	VortonSim &             GetVortonSim() { return mVortonSim; }
 	void                    Clear() { mVortonSim.Clear(); }
+    std::vector<RbSphere> & GetSpheres() { return mSpheres; }
 
 private:
 	void RemoveEmbeddedParticles();
