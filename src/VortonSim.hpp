@@ -6,6 +6,7 @@
 #include "UniformGrid.hpp"
 #include "Particle.hpp"
 #include "ofVec3f.h"
+#include "TBB_Settings.hpp"
 
 class VortonSim {
     
@@ -87,4 +88,9 @@ private:
     float                   mFluidDensity           ;   ///< Uniform density of fluid.
     float                   mMassPerParticle        ;   ///< Mass of each fluid particle (vorton or tracer).
     std::vector< Particle > mTracers                ;   ///< Passive tracer particles
+    
+#if USE_TBB
+    friend class VortonSim_ComputeVelocityGrid_TBB;
+    friend class VortonSim_AdvectTracers_TBB;
+#endif
 };

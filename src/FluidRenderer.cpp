@@ -16,9 +16,16 @@ FluidRenderer::FluidRenderer() {
 	mVbo->setVertexBuffer(*mBuf, 3, sizeof(Particle));
 
 	auto & vortons = mFluidSim->GetVortonSim().GetVortons();
+    
+    // 2D sheet
+//    AssignVorticity(vortons, fMagnitude, numVortonsMax, VortexSheet(fThickness, /* variation */ 0.0f, /* width */ 2.f * fThickness));
+    
+    // Vortex sheet with spanwise variation
+//    AssignVorticity(vortons, fMagnitude, numVortonsMax, VortexSheet(fThickness, /* variation */ 0.2f, /* width */ 7.0f * fThickness));
+    
+    //Jet vortex ring, velocity in [0,1]
+    AssignVorticity( vortons , fMagnitude , numVortonsMax , JetRing( fRadius , fThickness , ofVec3f( 1.0f , 0.0f , 0.0f ) ) ) ;
 
-	// Vortex Tube
-    AssignVorticity(vortons, fMagnitude, numVortonsMax, VortexTube(fThickness, /* variation */ 0.0f, /* width */ 2.0f * fThickness, 2, 0));
 	mFluidSim->Initialize(numTracersPerCubeRoot);
 }
 

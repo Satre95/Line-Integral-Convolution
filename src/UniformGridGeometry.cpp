@@ -95,7 +95,7 @@ void UniformGridGeometry::Decimate(const UniformGridGeometry & src, int iDecimat
 
 void UniformGridGeometry::IndicesOfPosition(size_t indices[3], const ofVec3f & vPosition) const
 {
-	// Notice the pecular test here.  vPosition may lie slightly outside of the extent give by vMax.
+	// Notice the peculiar test here.  vPosition may lie slightly outside of the extent give by vMax.
 	// Review the geometry described in the class header comment.
 	ofVec3f vPosRel(vPosition - GetMinCorner());   // position of given point relative to container region
 	ofVec3f vIdx(vPosRel.x * GetCellsPerExtent().x, vPosRel.y * GetCellsPerExtent().y, vPosRel.z * GetCellsPerExtent().z);
@@ -113,9 +113,8 @@ size_t UniformGridGeometry::OffsetOfPosition(const ofVec3f & vPosition) {
 
 void UniformGridGeometry::PositionFromIndices(ofVec3f & vPosition, const size_t indices[3]) const
 {
-	vPosition.x = GetMinCorner().x + float(indices[0]) * GetCellSpacing().x;
-	vPosition.y = GetMinCorner().y + float(indices[1]) * GetCellSpacing().y;
-	vPosition.z = GetMinCorner().z + float(indices[2]) * GetCellSpacing().z;
+    ofVec3f indexFloats(indices[0], indices[1], indices[2]);
+    vPosition = GetMinCorner() + (indexFloats * GetCellSpacing());
 }
 
 void UniformGridGeometry::IndicesFromOffset(size_t indices[3], const size_t & offset)
@@ -129,7 +128,6 @@ void UniformGridGeometry::PositionFromOffset(ofVec3f & vPos, const size_t & offs
 {
 	size_t indices[3];
 	IndicesFromOffset(indices, offset);
-	vPos.x = GetMinCorner().x + float(indices[0]) * GetCellSpacing().x;
-	vPos.y = GetMinCorner().y + float(indices[1]) * GetCellSpacing().y;
-	vPos.z = GetMinCorner().z + float(indices[2]) * GetCellSpacing().z;
+    ofVec3f indexVec(indices[0], indices[1], indices[2]);
+    vPos = GetMinCorner() + (indexVec * GetCellSpacing());
 }

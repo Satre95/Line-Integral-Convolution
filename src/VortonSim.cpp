@@ -2,6 +2,46 @@
 #include "VortonClusterAux.hpp"
 #include"UniformGridMath.hpp"
 #include "Mat3.hpp"
+#include <thread>
+
+#define VELOCITY_FROM_TREE 1
+
+#if USE_TBB
+
+/*! \brief Function object to compute velocity grid using Threading Building Blocks
+ */
+class VortonSim_ComputeVelocityGrid_TBB
+{
+    VortonSim * mVortonSim ;    ///< Address of VortonSim object
+public:
+    void operator() ( const tbb::blocked_range<size_t> & r ) const
+    {   // Compute subset of velocity grid.
+        mVortonSim->ComputeVelocityGridSlice( r.begin() , r.end() ) ;
+    }
+    VortonSim_ComputeVelocityGrid_TBB( VortonSim * pVortonSim )
+    : mVortonSim( pVortonSim ) {}
+} ;
+
+/*! \brief Function object to advect passive tracer particles using Threading Building Blocks
+ */
+class VortonSim_AdvectTracers_TBB
+{
+    VortonSim * mVortonSim ;    ///< Address of VortonSim object
+    const float & mTimeStep ;
+    const unsigned & mFrame ;
+public:
+    void operator() ( const tbb::blocked_range<size_t> & r ) const
+    {   // Advect subset of tracers.
+        mVortonSim->AdvectTracersSlice( mTimeStep , mFrame , r.begin() , r.end() ) ;
+    }
+    VortonSim_AdvectTracers_TBB( VortonSim * pVortonSim , const float & timeStep , const unsigned & uFrame )
+    : mVortonSim( pVortonSim )
+    , mTimeStep( timeStep )
+    , mFrame( uFrame )
+    {}
+} ;
+#endif
+
 
 /*! \brief Update axis-aligned bounding box corners to include given point
 
@@ -393,7 +433,7 @@ ofVec3f VortonSim::ComputeVelocity(const ofVec3f & vPosition, const size_t indic
 	// Setting this to 0 leads to very bad errors, but values greater than (tiny) lead to drastic improvements.
 	// Changes in margin have a quantized effect since they effectively indicate how many additional
 	// cluster subdivisions to visit.
-	static const float  marginFactor = 0.0001f; // 0.4f ; // ship with this number: 0.0001f ; test with 0.4
+	static const float  marginFactor = 0.4f; // 0.4f ; // ship with this number: 0.0001f ; test with 0.4
 													// When domain is 2D in XY plane, min.z==max.z so vPos.z test below would fail unless margin.z!=0.
 	const ofVec3f          margin = marginFactor * vSpacing + (0.0f == vSpacing.z ? ofVec3f(0, 0, FLT_MIN) : ofVec3f(0, 0, 0));
 
@@ -544,9 +584,9 @@ void VortonSim::ComputeVelocityGrid(void)
 
 #if USE_TBB
 	// Estimate grain size based on size of problem and number of processors.
-	const size_t grainSize = MAX2(1, numZ / gNumberOfProcessors);
+    const size_t grainSize = std::max(size_t(1), numZ / std::thread::hardware_concurrency());
 	// Compute velocity grid using multiple threads.
-	parallel_for(tbb::blocked_range<size_t>(0, numZ, grainSize), VortonSim_ComputeVelocityGrid_TBB(this));
+    tbb::parallel_for(tbb::blocked_range<size_t>(0, numZ, grainSize), VortonSim_ComputeVelocityGrid_TBB(this));
 #else
 	ComputeVelocityGridSlice(0, numZ);
 #endif
@@ -842,9 +882,9 @@ void VortonSim::AdvectTracers(const float & timeStep, const size_t & uFrame)
 
 #if USE_TBB
 	// Estimate grain size based on size of problem and number of processors.
-	const size_t grainSize = std::max(1, numTracers / gNumberOfProcessors);
+    const size_t grainSize = std::max(size_t(1), numTracers / std::thread::hardware_concurrency());
 	// Advect tracers using multiple threads.
-	parallel_for(tbb::blocked_range<size_t>(0, numTracers, grainSize), VortonSim_AdvectTracers_TBB(this, timeStep, uFrame));
+    tbb::parallel_for(tbb::blocked_range<size_t>(0, numTracers, grainSize), VortonSim_AdvectTracers_TBB(this, timeStep, uFrame));
 #else
 	AdvectTracersSlice(timeStep, uFrame, 0, numTracers);
 #endif

@@ -25,6 +25,6 @@ private:
     const float      fMagnitude = 10.0f;
     const size_t     numCellsPerDim = 16;
     const size_t     numVortonsMax = numCellsPerDim * numCellsPerDim * numCellsPerDim;
-    unsigned                numTracersPerCubeRoot = 6;
+    unsigned                numTracersPerCubeRoot = 5;
     
 };
