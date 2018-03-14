@@ -433,7 +433,7 @@ ofVec3f VortonSim::ComputeVelocity(const ofVec3f & vPosition, const size_t indic
 	// Setting this to 0 leads to very bad errors, but values greater than (tiny) lead to drastic improvements.
 	// Changes in margin have a quantized effect since they effectively indicate how many additional
 	// cluster subdivisions to visit.
-	static const float  marginFactor = 0.4f; // 0.4f ; // ship with this number: 0.0001f ; test with 0.4
+	static const float  marginFactor = 0.0001f; // 0.4f ; // ship with this number: 0.0001f ; test with 0.4
 													// When domain is 2D in XY plane, min.z==max.z so vPos.z test below would fail unless margin.z!=0.
 	const ofVec3f          margin = marginFactor * vSpacing + (0.0f == vSpacing.z ? ofVec3f(0, 0, FLT_MIN) : ofVec3f(0, 0, 0));
 
@@ -559,7 +559,7 @@ void VortonSim::ComputeVelocityGridSlice(size_t izStart, size_t izEnd)
 #if VELOCITY_FROM_TREE
 				static const size_t zeros[3] = { 0 , 0 , 0 }; // Starter indices for recursive algorithm
 				mVelGrid[offsetXYZ] = ComputeVelocity(vPosition, zeros, numLayers - 1);
-#else   // Slow accurate dirrect summation algorithm
+#else   // Slow accurate direct summation algorithm
 				mVelGrid[offsetXYZ] = ComputeVelocityBruteForce(vPosition);
 #endif
 			}
@@ -740,6 +740,7 @@ void VortonSim::DiffuseVorticityPSE(const float & timeStep, const size_t & uFram
 	const size_t & nz = ugVortRef.GetNumPoints(2);
 	const size_t   nzm1 = nz - 1;
 	size_t idx[3];
+
 	for (idx[2] = 0; idx[2] < nzm1; ++idx[2])
 	{   // For all points along z except the last...
 		const size_t offsetZ0 = idx[2] * nxy;
@@ -859,7 +860,7 @@ void VortonSim::AdvectTracersSlice(const float & timeStep, const size_t & uFrame
 {
 	for (size_t offset = itStart; offset < itEnd; ++offset)
 	{   // For each passive tracer in this slice...
-		Particle & rTracer = mTracers[offset];
+		Particle & rTracer = mTracers.at(offset);
 		ofVec3f velocity;
 		mVelGrid.Interpolate(velocity, rTracer.mPosition);
 		rTracer.mPosition += velocity * timeStep;
