@@ -20,11 +20,11 @@ private:
     ofVboRef mVbo;
     ofBufRef mBuf;
     
-    const float      fRadius = 12.0f;
-    const float      fThickness = 5.0f;
-    const float      fMagnitude = 20.0f;
-    const size_t     numCellsPerDim = 24;
-    const size_t     numVortonsMax = numCellsPerDim * numCellsPerDim * numCellsPerDim;
-    unsigned                numTracersPerCubeRoot = 6;
+    float      fRadius = 1.0f;
+    float      fThickness = 1.0f;
+    float      fMagnitude = 20.0f;
+    size_t     numCellsPerDim = 16;
+    size_t     numVortonsMax = numCellsPerDim * numCellsPerDim * numCellsPerDim;
+    size_t                numTracersPerCubeRoot = 6;
     
 };

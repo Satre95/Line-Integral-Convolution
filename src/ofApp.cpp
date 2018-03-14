@@ -21,11 +21,11 @@ void ofApp::update() {
 //--------------------------------------------------------------
 void ofApp::draw() {
 	ofBackground(0);
-	mCamera.begin();
+    mCamera.begin();
 	{
 		mFluidRenderer.Draw();
 	}
-	mCamera.end();
+    mCamera.end();
 }
 
 //--------------------------------------------------------------
