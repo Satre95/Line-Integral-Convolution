@@ -1,6 +1,8 @@
 #include "ofApp.h"
 #include "math_helper.hpp"
 
+using namespace std::chrono;
+
 //--------------------------------------------------------------
 void ofApp::setup() {
 	ofSetVerticalSync(true);
@@ -9,11 +11,16 @@ void ofApp::setup() {
 	mCamera.setDistance(12.f);
 	mCamera.setNearClip(0.01f);
 	mCamera.setFarClip(1000.f);
+
+	lastFrameTime = high_resolution_clock::now();
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	auto delta_t = ofGetElapsedTimef() - ofGetLastFrameTime();
+	auto now = high_resolution_clock::now();
+	auto diff = now - lastFrameTime;
+	double delta_t = duration_cast<microseconds>(diff).count() * 10e-6f;
+
 	auto frameNum = ofGetFrameNum();
 	mFluidRenderer.Update(delta_t, frameNum);
 }
