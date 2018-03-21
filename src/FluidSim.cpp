@@ -41,9 +41,9 @@
  the code below.
  
  */
-#define BOUNDARY_NO_SLIP_NO_THRU                        1
+#define BOUNDARY_NO_SLIP_NO_THRU 1
 // BOUNDARY_RESPECTS_AMBIENT_FLOW only takes effect if BOUNDARY_NO_SLIP_NO_THRU is true
-#define BOUNDARY_RESPECTS_AMBIENT_FLOW                  1
+#define BOUNDARY_RESPECTS_AMBIENT_FLOW 1
 // BOUNDARY_AMBIENT_FLOW_OMITS_VORTON_OLD_POSITION only takes effect if BOUNDARY_RESPECTS_AMBIENT_FLOW is true.
 #define BOUNDARY_AMBIENT_FLOW_OMITS_VORTON_OLD_POSITION 1
 
@@ -78,19 +78,13 @@ void FluidSim::Initialize(size_t numTracersPerCellCubeRoot) {
  */
 void FluidSim::Update(float timeStep, size_t uFrame) {
     // Update fluid, temporarily ignoring rigid bodies and boundary conditions.
-//    QUERY_PERFORMANCE_ENTER ;
     mVortonSim.Update( timeStep , uFrame ) ;
-//    QUERY_PERFORMANCE_EXIT( FluidBodySim_VortonSim_Update ) ;
     
     // Apply boundary conditions and calculate impulses to apply to rigid bodies.
-//    QUERY_PERFORMANCE_ENTER ;
     SolveBoundaryConditions() ;
-//    QUERY_PERFORMANCE_EXIT( FluidBodySim_SolveBoundaryConditions ) ;
     
     // Update rigid bodies.
-//    QUERY_PERFORMANCE_ENTER ;
     RbSphere::UpdateSystem( mSpheres , timeStep , uFrame ) ;
-//    QUERY_PERFORMANCE_EXIT( FluidBodySim_RbSphere_UpdateSystem ) ;
 }
 
 /*! \brief Remove particles within rigid bodies

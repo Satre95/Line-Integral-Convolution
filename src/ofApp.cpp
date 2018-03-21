@@ -7,8 +7,8 @@ using namespace std::chrono;
 void ofApp::setup() {
 	ofSetVerticalSync(true);
 	ofEnableDepthTest();
-	mCamera.setTarget(ofVec3f(0.f, 1.f, 0.f));
-	mCamera.setDistance(12.f);
+	mCamera.setTarget(ofVec3f(10.f, 1.f, 0.f));
+	mCamera.setDistance(80.f);
 	mCamera.setNearClip(0.01f);
 	mCamera.setFarClip(1000.f);
 
@@ -28,15 +28,16 @@ void ofApp::update() {
 //--------------------------------------------------------------
 void ofApp::draw() {
 	ofBackground(0);
-	mCamera.begin();
+    mCamera.begin();
 	{
 		mFluidRenderer.Draw();
 	}
-	mCamera.end();
+    mCamera.end();
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key) {
+    mFluidRenderer.KeyPressed(key);
 }
 
 //--------------------------------------------------------------
